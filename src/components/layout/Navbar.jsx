@@ -11,9 +11,9 @@ function Navbar() {
        <Link to="/" className="text-2xl font-bold text-white mx-4">PowerTips</Link>
       </div>
       <div className="space-x-10">
-        <Link to="/" className="text-white hover:text-blue-600">Predictions</Link>
-        <Link to="/upcoming" className="text-white hover:text-blue-600">Upcoming</Link>
-        <Link to="/results" className="text-white hover:text-blue-600">Results</Link>
+        <Link to="/" className="text-white hover:text-blue-600">Home</Link>
+        {/* <Link to="/blogs" className="text-white hover:text-blue-600">Blogs</Link>
+        <Link to="/login" className="text-white hover:text-blue-600">Login/Register</Link> */}
       </div>
     </div>
   </nav>

@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Upcoming() {
+function Login() {
   return (
     <div>
       
@@ -8,4 +8,4 @@ function Upcoming() {
   )
 }
 
-export default Upcoming
+export default Login
