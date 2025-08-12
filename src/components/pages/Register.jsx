@@ -1,12 +1,13 @@
 import React from 'react'
 import Spinner from '../Spinner'
 
-function Blog() {
+function Register() {
   return (
     <div>
-     <Spinner/> 
+      {/* <h1>Register</h1> */}
+      <Spinner/>
     </div>
   )
 }
 
-export default Blog
+export default Register
