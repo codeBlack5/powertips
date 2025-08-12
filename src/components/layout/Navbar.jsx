@@ -1,0 +1,23 @@
+import React from 'react'
+import { Link } from 'react-router-dom'
+import logo from '../assets/images/image.jpg'
+// import { Link } from 'react-router-dom'
+function Navbar() {
+  return (
+    <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md p-4 z-50">
+    <div className="max-w-7xl mx-auto p-4 flex justify-between items-center">
+      <div className='flex items-center'>
+        <img src={logo} alt='logo' className='h-25 w-20 rounded-full shadow-xl'></img>
+       <Link to="/" className="text-2xl font-bold text-white mx-4">PowerTips</Link>
+      </div>
+      <div className="space-x-10">
+        <Link to="/" className="text-white hover:text-blue-600">Home</Link>
+        {/* <Link to="/blogs" className="text-white hover:text-blue-600">Blogs</Link>
+        <Link to="/login" className="text-white hover:text-blue-600">Login/Register</Link> */}
+      </div>
+    </div>
+  </nav>
+  )
+}
+
+export default Navbar
