@@ -6,6 +6,8 @@ import Home from './components/pages/Home';
 import Blog from './components/pages/Blog';
 import Login from './components/pages/Login';
 import { initGA, logPageView } from "./ga";
+import Register from "./components/pages/Register";
+import AppWrapper from "./AppWrapper";
 
 function PageTracker() {
   const location = useLocation();
@@ -23,14 +25,17 @@ function App() {
   }, []);
   return (
     <BrowserRouter>
+    <AppWrapper>
     <PageTracker />
       <Routes>
         <Route path='/' element={<Layout/>}>
           <Route index element={<Home/>}/>
           <Route path='/blogs' element={<Blog/>}/>
           <Route path='/login' element ={<Login/>}/>
+          <Route path='/register' element={<Register/>}/>
         </Route>
       </Routes>
+      </AppWrapper>
     </BrowserRouter>
   );
 }
