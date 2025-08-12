@@ -58,27 +58,27 @@ function Home() {
             </a>
           </div>
           {/* Game of the Day */}
-{gameOfTheDay && (
-  <div className="bg-gradient-to-r from-yellow-500 via-red-500 to-pink-500 text-white p-4 sm:p-6 rounded-lg shadow-lg mt-8 max-w-xl mx-auto">
-    <h2 className="text-xl sm:text-2xl font-bold mb-3 text-center">
-      🌟 Game of the Day 🌟
-    </h2>
-    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-center sm:text-left">
-      <div>
-        <p className="font-semibold text-lg">{gameOfTheDay.game}</p>
-        <p className="text-sm text-white/90">
-          Prediction: <span className="text-blue-200">{gameOfTheDay.pred}</span>
-        </p>
-      </div>
-      <div className="mt-2 sm:mt-0">
-        <p className="text-green-200 font-bold">Odds: {gameOfTheDay.odds}</p>
-        <p className="text-sm">
-          Date: {formatDate(gameOfTheDay.date)}
-        </p>
-      </div>
-    </div>
-  </div>
-)}
+          {gameOfTheDay && (
+            <div className="bg-gradient-to-r from-yellow-500 via-red-500 to-pink-500 text-white p-4 sm:p-6 rounded-lg shadow-lg mt-8 max-w-xl mx-auto">
+              <h2 className="text-xl sm:text-2xl font-bold mb-3 text-center">
+                🌟 Game of the Day 🌟
+              </h2>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-center sm:text-left">
+                <div>
+                  <p className="font-semibold text-lg">{gameOfTheDay.game}</p>
+                  <p className="text-sm text-white/90">
+                    Prediction: <span className="text-blue-200">{gameOfTheDay.pred}</span>
+                  </p>
+                </div>
+                <div className="mt-2 sm:mt-0">
+                  <p className="text-green-200 font-bold">Odds: {gameOfTheDay.odds}</p>
+                  <p className="text-sm">
+                    Date: {formatDate(gameOfTheDay.date)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
           {/* Completed games table */}
           <div className="bg-gray-900 bg-opacity-50 flex flex-col items-center p-4 sm:p-6 rounded-lg">
             <h1 className="text-lg sm:text-2xl font-bold text-white mb-4 sm:mb-6">
@@ -149,9 +149,6 @@ function Home() {
                 </tbody>
               </table>
             </div>
-          </div>
-          <div>
-            Game of the day
           </div>
         </section>
       </div>
