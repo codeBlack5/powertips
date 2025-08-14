@@ -21,6 +21,7 @@ function Home() {
     { game: "Malmo FF vs FC Copenhagen", pred: "Both Teams To Score",odds: "3.42", result: "❌", color: "red", text: "Lost", date: "2025-08-05" },
     { game: "Uganda vs Niger", pred: "First Half Home",odds: "4.22", result: "✅", color: "green", text: "Won", date: "2025-08-11" },
     { game: "Naesby vs Horsens", pred: "First Half Draw",odds: "3.12", result: "✅", color: "green", text: "Won", date: "2025-08-12" },
+    { game: "PSG vs Tottenham", pred: "First Half Draw",odds: "2.89", result: "❌", color: "red", text: "PLost", date: "2025-08-13" },
   ];
 
   // Upcoming games data
@@ -62,13 +63,13 @@ function Home() {
           {gameOfTheDay && (
             <div className="bg-gradient-to-r from-yellow-500 via-red-500 to-pink-500 text-white p-4 sm:p-6 rounded-lg shadow-lg mt-8 max-w-xl mx-auto">
               <h2 className="text-xl sm:text-2xl font-bold mb-3 text-center">
-                🌟 Game of the Day 🌟
+                🌟 Bet of the Day 🌟
               </h2>
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center text-center sm:text-left">
                 <div>
                   <p className="font-semibold text-lg">{gameOfTheDay.game}</p>
                   <p className="text-sm text-white/90">
-                    Prediction: <span className="text-green-600">{gameOfTheDay.pred}</span>
+                    Prediction: <span className="text-blue-900 font-bold">{gameOfTheDay.pred}</span>
                   </p>
                 </div>
                 <div className="mt-2 sm:mt-0">
