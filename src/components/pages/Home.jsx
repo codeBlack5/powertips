@@ -22,6 +22,7 @@ function Home() {
     { game: "Uganda vs Niger", pred: "First Half Home",odds: "4.22", result: "✅", color: "green", text: "Won", date: "2025-08-11" },
     { game: "Naesby vs Horsens", pred: "First Half Draw",odds: "3.12", result: "✅", color: "green", text: "Won", date: "2025-08-12" },
     { game: "PSG vs Tottenham", pred: "First Half Draw",odds: "2.89", result: "❌", color: "red", text: "PLost", date: "2025-08-13" },
+    { game: "Angola vs DRC", pred: "First Half Draw", odds: "3.54", result: "✅", color: "green", text: "Won", date: "2025-08-14" },
   ];
 
   // Upcoming games data
