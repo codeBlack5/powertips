@@ -1,71 +1,66 @@
-# Getting Started with Create React App
+⚡ PowerTips
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+PowerTips is a React-based sports predictions app that displays previous, upcoming, and daily highlighted predictions for football matches. The application is designed to be responsive, visually engaging, and easy to use, offering bettors and sports enthusiasts a quick glance at reliable predictions.
 
-## Available Scripts
+🚀 Features
+🏠 Home Page (Home.jsx)
 
-In the project directory, you can run:
+The Home page is the main dashboard of the app, displaying:
 
-### `npm start`
+VIP Section
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+Highlights the Telegram VIP group for exclusive tips.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Provides a call-to-action button for users to join.
 
-### `npm test`
+Game of the Day
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Dynamically selects and displays the featured prediction of the day.
 
-### `npm run build`
+Shows game name, prediction, odds, and date in a colorful gradient card.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Previous Predictions
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+A responsive table showing past game predictions.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Includes game name, prediction, odds, result, and date.
 
-### `npm run eject`
+Hover tooltips on results (Won / Lost) for extra clarity.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Results are color-coded:
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+🟢 Green → Won
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+🔴 Red → Lost
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+Upcoming Predictions
 
-## Learn More
+Displays scheduled games with pending predictions.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Similar format to the previous predictions table, but marked as ⏳ Pending in yellow.
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+📊 Data Handling
 
-### Code Splitting
+Predictions are stored in arrays of objects (gamesData and upcomingGames).
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Data is sorted by date so the most recent games appear first.
 
-### Analyzing the Bundle Size
+Dates are formatted with toLocaleDateString for a clean, readable output.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+The app automatically detects today’s date to highlight the Game of the Day.
 
-### Making a Progressive Web App
+🛠️ Tech Stack
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+React.js – Frontend framework.
 
-### Advanced Configuration
+Tailwind CSS – Responsive and modern styling.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+JavaScript (ES6+) – Logic for sorting, filtering, and formatting data.
 
-### Deployment
+📱 Responsiveness
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+The UI adapts to mobile, tablet, and desktop devices, making predictions easy to follow across platforms.
 
-### `npm run build` fails to minify
+🔗 Links
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# powertips
+📢 Join the VIP Telegram Group: PowerTips [Telegram](https://t.me/powertipsterbets)

@@ -8,6 +8,8 @@ import Login from './components/pages/Login';
 import { initGA, logPageView } from "./ga";
 import Register from "./components/pages/Register";
 import AppWrapper from "./AppWrapper";
+import Favorites from "./components/pages/Favorites";
+import History from "./components/pages/History";
 
 function PageTracker() {
   const location = useLocation();
@@ -33,6 +35,8 @@ function App() {
           <Route path='/blogs' element={<Blog/>}/>
           <Route path='/login' element ={<Login/>}/>
           <Route path='/register' element={<Register/>}/>
+          <Route path="/favorites" element={<Favorites/>}/>
+          <Route path="/history" element={<History/>}/>
         </Route>
       </Routes>
       </AppWrapper>
