@@ -1,12 +1,66 @@
-import React from 'react'
-import Spinner from '../Spinner'
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // 🔗 Later: call Rails API here
+    setTimeout(() => {
+      setLoading(false);
+      alert("Logged in successfully! (Hook to API later)");
+    }, 1500);
+  };
+
   return (
-    <div>
-      <Spinner/>
+    <div className="flex justify-center items-center min-h-screen px-4">
+      <div className="bg-gray-900 p-6 sm:p-8 rounded-2xl shadow-lg w-full max-w-md">
+        <h2 className="text-white text-2xl sm:text-3xl font-bold text-center mb-6">
+          Login to <span className="text-blue-500">PowerTips</span>
+        </h2>
+
+        <form onSubmit={handleLogin} className="space-y-4">
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 transition disabled:opacity-50"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
+
+        <p className="text-gray-400 text-sm mt-4 text-center">
+          Don’t have an account?{" "}
+          <Link to="/register" className="text-blue-500 hover:underline">
+            Register
+          </Link>
+        </p>
+      </div>
     </div>
-  )
+  );
 }
 
-export default Login
+export default Login;
