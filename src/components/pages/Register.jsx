@@ -30,7 +30,7 @@ function Register() {
         <form onSubmit={handleRegister} className="space-y-4">
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="First Name"
             className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={firstName}
             onChange={(e) => setfirstName(e.target.value)}
@@ -39,7 +39,7 @@ function Register() {
 
           <input
             type="text"
-            placeholder="Full Name"
+            placeholder="Last Name"
             className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={lastName}
             onChange={(e) => setlastName(e.target.value)}
