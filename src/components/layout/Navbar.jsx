@@ -83,13 +83,21 @@ function Navbar() {
       {isOpen && (
         <div
           ref={sheetRef}
-          className="fixed bottom-0 left-0 w-full rounded-t-2xl shadow-lg 
-                     flex flex-col items-center space-y-4 py-6 md:hidden animate-slideUp"
+          className="fixed bottom-0 left-0 w-full  rounded-t-2xl shadow-lg 
+                     flex flex-col items-center space-y-4 py-6 md:hidden animate-slideUp relative bg-gray-900"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
         >
+          {/* Close Button */}
+          <button
+            onClick={() => setIsOpen(false)}
+            className="absolute top-3 right-4 text-white hover:text-white transform transition duration-300 hover:scale-125 hover:rotate-90 bg-red-500/10 hover:bg-red-500 rounded-full p-2 shadow-md"
+          >
+            <FaTimes size={20} />
+          </button>
+
           {/* Drag Handle */}
-          <div className="w-12 h-1.5 bg-gray-500 rounded-full mb-4"></div>
+          <div className="w-12 h-1.5 bg-gray-500 rounded-full mb-6"></div>
 
           {["/", "/favorites", "/history", "/blogs", "/login", "/register"].map((path) => (
             <button
@@ -102,6 +110,15 @@ function Navbar() {
           ))}
         </div>
       )}
+
+      {/* Keyframe Animation */}
+      <style>{`
+        @keyframes slideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        .animate-slideUp { animation: slideUp 0.3s ease-out; }
+      `}</style>
     </nav>
   );
 }

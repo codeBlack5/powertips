@@ -30,13 +30,53 @@ function Home() {
 
   // Games Data
   const gamesData = [
-    { game: "Independiente vs River Plate", pred: "First Half Draw", odds: "3.45", result: "✅", color: "green", text: "Won", date: "2025-08-10", league: "Copa Libertadores", explanation: "Both teams are defensively strong in the first half." },
-    { game: "Coritiba vs Chapecoense-SC", pred: "First Half Draw", odds: "2.95", result: "✅", color: "green", text: "Won", date: "2025-08-09", league: "Serie B", explanation: "Both teams are closely matched, strong defensive stats." },
-    { game: "PSG vs Tottenham", pred: "First Half Draw", odds: "2.89", result: "❌", color: "red", text: "Lost", date: "2025-08-13", league: "Champions League", explanation: "PSG usually dominate at home, but Spurs pressed early." },
+    {
+      game: "Independiente vs River Plate",
+      pred: "First Half Draw",
+      odds: "3.45",
+      result: "✅",
+      color: "green",
+      text: "Won",
+      date: "2025-08-10",
+      league: "Copa Libertadores",
+      explanation: "Both teams are defensively strong in the first half.",
+    },
+    {
+      game: "Coritiba vs Chapecoense-SC",
+      pred: "First Half Draw",
+      odds: "2.95",
+      result: "✅",
+      color: "green",
+      text: "Won",
+      date: "2025-08-09",
+      league: "Serie B",
+      explanation: "Both teams are closely matched, strong defensive stats.",
+    },
+    {
+      game: "PSG vs Tottenham",
+      pred: "First Half Draw",
+      odds: "2.89",
+      result: "❌",
+      color: "red",
+      text: "Lost",
+      date: "2025-08-13",
+      league: "Champions League",
+      explanation: "PSG usually dominate at home, but Spurs pressed early.",
+    },
   ];
 
   const upcomingGames = [
-    { game: "Aalborg vs Horsens", pred: "First Half Home", odds: "3.52", result: "⏳", color: "yellow", text: "Pending", date: "2025-08-15", league: "Superliga", explanation: "Aalborg has a strong first-half scoring record." },
+    {
+      game: "Aalborg vs Horsens",
+      pred: "First Half Home",
+      odds: "3.52",
+      result: "⏳",
+      color: "yellow",
+      text: "Pending",
+      date: "2025-08-15",
+      league: "Superliga",
+      explanation: "Aalborg has a strong first-half scoring record.",
+    },
   ];
 
   // Filtering
@@ -47,8 +87,12 @@ function Home() {
         (filterDate ? g.date === filterDate : true)
     );
 
-  const sortedGames = [...gamesData].sort((a, b) => new Date(b.date) - new Date(a.date));
-  const sortedUpcoming = [...upcomingGames].sort((a, b) => new Date(b.date) - new Date(a.date));
+  const sortedGames = [...gamesData].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
+  const sortedUpcoming = [...upcomingGames].sort(
+    (a, b) => new Date(b.date) - new Date(a.date)
+  );
 
   // Win/Loss stats
   const winCount = gamesData.filter((g) => g.result === "✅").length;
@@ -111,21 +155,51 @@ function Home() {
                 </tr>
               </thead>
               <tbody>
-                {filterGames(sortedGames).map((row, i) => (
-                  <tr
-                    key={i}
-                    onClick={() => setSelectedGame(row)}
-                    className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
-                  >
-                    <td className="p-2 sm:p-3">{row.game}</td>
-                    <td className="p-2 sm:p-3 text-blue-600 font-semibold">{row.pred}</td>
-                    <td className="p-2 sm:p-3 text-green-600 font-bold">{row.odds}</td>
-                    <td className={`p-2 sm:p-3 text-${row.color}-600 font-semibold`}>
-                      {row.result}
-                    </td>
-                    <td className="p-2 sm:p-3">{formatDate(row.date)}</td>
-                  </tr>
-                ))}
+                {filterGames(sortedGames).map((row, i) => {
+                  const isFavorite = favorites.some((f) => f.game === row.game);
+                  return (
+                    <tr
+                      key={i}
+                      onClick={() => setSelectedGame(row)}
+                      className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
+                    >
+                      <td className="p-2 sm:p-3 flex items-center gap-2">
+                        {row.game}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isFavorite) {
+                              setFavorites(
+                                favorites.filter((f) => f.game !== row.game)
+                              );
+                            } else {
+                              setFavorites([...favorites, row]);
+                            }
+                          }}
+                          className={`ml-2 text-lg transition ${
+                            isFavorite
+                              ? "text-yellow-400 scale-110"
+                              : "text-gray-400 hover:text-yellow-400"
+                          }`}
+                        >
+                          {isFavorite ? "★" : "☆"}
+                        </button>
+                      </td>
+                      <td className="p-2 sm:p-3 text-blue-600 font-semibold">
+                        {row.pred}
+                      </td>
+                      <td className="p-2 sm:p-3 text-green-600 font-bold">
+                        {row.odds}
+                      </td>
+                      <td
+                        className={`p-2 sm:p-3 text-${row.color}-600 font-semibold`}
+                      >
+                        {row.result}
+                      </td>
+                      <td className="p-2 sm:p-3">{formatDate(row.date)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -148,21 +222,51 @@ function Home() {
                 </tr>
               </thead>
               <tbody>
-                {filterGames(sortedUpcoming).map((row, i) => (
-                  <tr
-                    key={i}
-                    onClick={() => setSelectedGame(row)}
-                    className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
-                  >
-                    <td className="p-2 sm:p-3">{row.game}</td>
-                    <td className="p-2 sm:p-3 text-blue-600 font-semibold">{row.pred}</td>
-                    <td className="p-2 sm:p-3 text-green-600 font-bold">{row.odds}</td>
-                    <td className={`p-2 sm:p-3 text-${row.color}-600 font-semibold`}>
-                      {row.result}
-                    </td>
-                    <td className="p-2 sm:p-3">{formatDate(row.date)}</td>
-                  </tr>
-                ))}
+                {filterGames(sortedUpcoming).map((row, i) => {
+                  const isFavorite = favorites.some((f) => f.game === row.game);
+                  return (
+                    <tr
+                      key={i}
+                      onClick={() => setSelectedGame(row)}
+                      className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
+                    >
+                      <td className="p-2 sm:p-3 flex items-center gap-2">
+                        {row.game}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (isFavorite) {
+                              setFavorites(
+                                favorites.filter((f) => f.game !== row.game)
+                              );
+                            } else {
+                              setFavorites([...favorites, row]);
+                            }
+                          }}
+                          className={`ml-2 text-lg transition ${
+                            isFavorite
+                              ? "text-yellow-400 scale-110"
+                              : "text-gray-400 hover:text-yellow-400"
+                          }`}
+                        >
+                          {isFavorite ? "★" : "☆"}
+                        </button>
+                      </td>
+                      <td className="p-2 sm:p-3 text-blue-600 font-semibold">
+                        {row.pred}
+                      </td>
+                      <td className="p-2 sm:p-3 text-green-600 font-bold">
+                        {row.odds}
+                      </td>
+                      <td
+                        className={`p-2 sm:p-3 text-${row.color}-600 font-semibold`}
+                      >
+                        {row.result}
+                      </td>
+                      <td className="p-2 sm:p-3">{formatDate(row.date)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -176,9 +280,18 @@ function Home() {
           <div className="w-full h-64">
             <ResponsiveContainer>
               <PieChart>
-                <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={100} label>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  nameKey="name"
+                  outerRadius={100}
+                  label
+                >
                   {chartData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    <Cell
+                      key={`cell-${index}`}
+                      fill={COLORS[index % COLORS.length]}
+                    />
                   ))}
                 </Pie>
               </PieChart>
@@ -195,24 +308,33 @@ function Home() {
             className="absolute inset-0 bg-black animate-fadeIn"
             onClick={() => setSelectedGame(null)}
           />
-          {/* Modal Content */}
-          <div className="bg-gray-900 text-gray-600 w-full sm:w-2/3 md:w-1/2 lg:w-1/3 p-6 rounded-t-2xl animate-slideUp relative z-10">
-            <button
-              onClick={() => setSelectedGame(null)}
-              className="absolute top-2 right-4 text-gray-400 hover:text-red-500 transform transition duration-300 hover:scale-125 hover:rotate-90 bg-red-500/10 hover:bg-red-500 rounded-full p-2 shadow-md"
-            >
-              ✖
-            </button>
-            <h2 className="text-xl font-bold text-white mb-2">{selectedGame.game}</h2>
-            <p className="text-gray-400 mb-2">League: {selectedGame.league}</p>
-            <p className="mb-2">
-              Prediction: <span className="text-blue-400">{selectedGame.pred}</span>
-            </p>
-            <p className="mb-2">
-              Odds: <span className="text-green-400">{selectedGame.odds}</span>
-            </p>
-            <p className="mb-2">Result: {selectedGame.result}</p>
-            <p className="text-sm text-gray-300 italic">{selectedGame.explanation}</p>
+          {/* Modal Content with Slide Up */}
+          <div className="relative z-10 w-full sm:w-2/3 md:w-1/2 lg:w-1/3">
+            <div className="bg-gray-900 text-gray-600 p-6 rounded-t-2xl animate-slideUp shadow-lg">
+              <button
+                onClick={() => setSelectedGame(null)}
+                className="absolute top-2 right-4 text-gray-400 hover:text-red-500 transform transition duration-300 hover:scale-125 hover:rotate-90 bg-red-500/10 hover:bg-red-500 rounded-full p-2 shadow-md"
+              >
+                ✖
+              </button>
+              <h2 className="text-xl font-bold text-white mb-2">
+                {selectedGame.game}
+              </h2>
+              <p className="text-gray-400 mb-2">
+                League: {selectedGame.league}
+              </p>
+              <p className="mb-2">
+                Prediction:{" "}
+                <span className="text-blue-400">{selectedGame.pred}</span>
+              </p>
+              <p className="mb-2">
+                Odds: <span className="text-green-400">{selectedGame.odds}</span>
+              </p>
+              <p className="mb-2">Result: {selectedGame.result}</p>
+              <p className="text-sm text-gray-300 italic">
+                {selectedGame.explanation}
+              </p>
+            </div>
           </div>
         </div>
       )}
