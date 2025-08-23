@@ -1,7 +1,7 @@
 // src/components/Navbar.jsx
 import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/image.jpg';
+import logo from '../assets/images/power.png';
 import { FaBars, FaTimes } from 'react-icons/fa';
 
 function Navbar() {
@@ -24,7 +24,7 @@ function Navbar() {
      hover:scale-110 
      ${activeLink === path ? 
        "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-[length:200%_100%] animate-shine" 
-       : "hover:bg-gray-700"}`;
+       : "hover:bg-gray-900 hover:text-blue-400 hover:p-2"}`;
 
   // Handle swipe down to close
   const handleTouchStart = (e) => setTouchStartY(e.touches[0].clientY);
@@ -47,12 +47,12 @@ function Navbar() {
             alt="logo"
             className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full shadow-xl"
           />
-          <h1 className="text-xl font-bold text-white">PowerTips</h1>
+          <h1 className="text-2xl font-bold text-white">PowerTips</h1>
         </div>
 
         {/* Desktop Links */}
         <div className="hidden md:flex space-x-8 lg:space-x-10">
-          {["/", "/favorites", "/history", "/blogs", "/login", "/register"].map((path) => (
+          {["/", "/favorites", "/history", "/news", "/login", "/register"].map((path) => (
             <button
               key={path}
               onClick={() => handleLinkClick(path)}
@@ -84,7 +84,7 @@ function Navbar() {
         <div
           ref={sheetRef}
           className="fixed bottom-0 left-0 w-full  rounded-t-2xl shadow-lg 
-                     flex flex-col items-center space-y-4 py-6 md:hidden animate-slideUp relative bg-gray-900"
+                     flex flex-col items-center space-y-4 py-6 md:hidden animate-slideUp"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
         >
@@ -99,7 +99,7 @@ function Navbar() {
           {/* Drag Handle */}
           <div className="w-12 h-1.5 bg-gray-500 rounded-full mb-6"></div>
 
-          {["/", "/favorites", "/history", "/blogs", "/login", "/register"].map((path) => (
+          {["/", "/favorites", "/history", "/news", "/login", "/register"].map((path) => (
             <button
               key={path}
               onClick={() => handleLinkClick(path)}
