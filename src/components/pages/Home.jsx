@@ -30,54 +30,109 @@ function Home() {
 
   // Games Data
   const gamesData = [
-    {
-      game: "Independiente vs River Plate",
-      pred: "First Half Draw",
-      odds: "3.45",
-      result: "✅",
-      color: "green",
-      text: "Won",
-      date: "2025-08-10",
-      league: "Copa Libertadores",
-      explanation: "Both teams are defensively strong in the first half.",
-    },
-    {
-      game: "Coritiba vs Chapecoense-SC",
-      pred: "First Half Draw",
-      odds: "2.95",
-      result: "✅",
-      color: "green",
-      text: "Won",
-      date: "2025-08-09",
-      league: "Serie B",
-      explanation: "Both teams are closely matched, strong defensive stats.",
-    },
-    {
-      game: "PSG vs Tottenham",
-      pred: "First Half Draw",
-      odds: "2.89",
-      result: "❌",
-      color: "red",
-      text: "Lost",
-      date: "2025-08-13",
-      league: "Champions League",
-      explanation: "PSG usually dominate at home, but Spurs pressed early.",
-    },
-  ];
+  {
+    game: "Brentford vs Aston Villa",
+    pred: "Brentford Win",
+    odds: "3.10", // Example odds
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-23",
+    league: "Premier League",
+    explanation: "Ouattara scored on debut to seal a 1–0 win.",
+  },
+  {
+    game: "Bournemouth vs Wolverhampton Wanderers",
+    pred: "Bournemouth Win",
+    odds: "2.50", // Example odds
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-23",
+    league: "Premier League",
+    explanation: "Early Tavernier goal and red card swung it Bournemouth’s way.",
+  },
+  {
+    game: "Burnley vs Sunderland",
+    pred: "Burnley Win",
+    odds: "3.75", // Example odds
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-23",
+    league: "Premier League",
+    explanation: "Goals from Cullen and Anthony secured a home win for Burnley.",
+  },
+  {
+    game: "Arsenal vs Leeds United",
+    pred: "First Half Home Win",
+    odds: "1.95", // Example odds
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-23",
+    league: "Premier League",
+    explanation: "Convincing 5–0 victory with Gyokeres scoring twice, though Saka & Ødegaard injured.",
+  },
+  {
+    game: "Independiente vs River Plate",
+    pred: "First Half Draw",
+    odds: "3.45",
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-10",
+    league: "Copa Libertadores",
+    explanation: "Both teams are defensively strong in the first half.",
+  },
+  {
+    game: "Coritiba vs Chapecoense-SC",
+    pred: "First Half Draw",
+    odds: "2.95",
+    result: "✅",
+    color: "green",
+    text: "Won",
+    date: "2025-08-09",
+    league: "Serie B",
+    explanation: "Both teams are closely matched, strong defensive stats.",
+  },
+  {
+    game: "PSG vs Tottenham",
+    pred: "First Half Draw",
+    odds: "2.89",
+    result: "❌",
+    color: "red",
+    text: "Lost",
+    date: "2025-08-13",
+    league: "Champions League",
+    explanation: "PSG usually dominate at home, but Spurs pressed early.",
+  },
+];
+const upcomingGames = [
+  {
+    game: "Manchester United vs Liverpool", // placeholder upcoming
+    pred: "Over 2.5 Goals",
+    odds: "1.90",
+    result: "⏳",
+    color: "yellow",
+    text: "Pending",
+    date: "2025-08-28",
+    league: "Premier League",
+    explanation: "Both teams have high scoring potential early in the season.",
+  },
+  {
+    game: "Real Madrid vs Barcelona", // placeholder upcoming
+    pred: "Draw",
+    odds: "3.00",
+    result: "⏳",
+    color: "yellow",
+    text: "Pending",
+    date: "2025-09-02",
+    league: "La Liga",
+    explanation: "El Clásico tends to be tight in the first half.",
+  },
+];
 
-  const upcomingGames = [
-    {
-      game: "Aalborg vs Horsens",
-      pred: "First Half Home",
-      odds: "3.52",
-      result: "⏳",
-      color: "yellow",
-      text: "Pending",
-      date: "2025-08-15",
-      league: "Superliga",
-      explanation: "Aalborg has a strong first-half scoring record.",
-    },
-  ];
 
   // Filtering
   const filterGames = (data) =>
@@ -163,7 +218,7 @@ function Home() {
                       onClick={() => setSelectedGame(row)}
                       className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
                     >
-                      <td className="p-2 sm:p-3 flex items-center gap-2">
+                      <td className="p-2 sm:p-3 flex items-center justify-between">
                         {row.game}
                         <button
                           onClick={(e) => {
@@ -179,7 +234,7 @@ function Home() {
                           className={`ml-2 text-lg transition ${
                             isFavorite
                               ? "text-yellow-400 scale-110"
-                              : "text-gray-400 hover:text-yellow-400"
+                              : "text-gray-400 hover:text-yellow-900"
                           }`}
                         >
                           {isFavorite ? "★" : "☆"}
@@ -230,7 +285,7 @@ function Home() {
                       onClick={() => setSelectedGame(row)}
                       className="border-b hover:bg-gray-100 hover:text-black transition cursor-pointer"
                     >
-                      <td className="p-2 sm:p-3 flex items-center gap-2">
+                      <td className="p-2 sm:p-3 flex items-center justify-between">
                         {row.game}
                         <button
                           onClick={(e) => {
@@ -246,7 +301,7 @@ function Home() {
                           className={`ml-2 text-lg transition ${
                             isFavorite
                               ? "text-yellow-400 scale-110"
-                              : "text-gray-400 hover:text-yellow-400"
+                              : "text-gray-400 hover:text-yellow-900"
                           }`}
                         >
                           {isFavorite ? "★" : "☆"}
