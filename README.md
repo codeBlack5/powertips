@@ -1,6 +1,8 @@
 ⚡ PowerTips
 
 PowerTips is a React-based sports predictions app that displays previous, upcoming, and daily highlighted predictions for football matches. The application is designed to be responsive, visually engaging, and easy to use, offering bettors and sports enthusiasts a quick glance at reliable predictions.
+it also gives statistic of the matches down to their last ten matches
+Data for each match
 
 🚀 Features
 🏠 Home Page (Home.jsx)
