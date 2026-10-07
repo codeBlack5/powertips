@@ -1,126 +1,166 @@
-// src/components/Navbar.jsx
-import React, { useState, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import logo from '../assets/images/power.png';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import React, { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
+import { FaBars, FaTimes, FaTelegramPlane } from "react-icons/fa";
+import logo from "../assets/images/power.png";
+
+const navItems = [
+  { label: "Home", path: "/" },
+  { label: "Predictions", path: "/history?view=predictions" },
+  { label: "Results", path: "/history?view=results" },
+  { label: "Favorites", path: "/favorites" },
+  { label: "Analysis", path: "/news" },
+  { label: "Login", path: "/login" },
+  { label: "Register", path: "/register" },
+];
 
 function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState(null);
-  const [touchStartY, setTouchStartY] = useState(null);
-  const navigate = useNavigate();
-  const sheetRef = useRef(null);
+  const location = useLocation();
 
-  const handleLinkClick = (path) => {
-    setActiveLink(path);
-    setTimeout(() => {
-      setIsOpen(false);
-      navigate(path);
-    }, 2000);
+  // Close mobile navigation after changing pages.
+  useEffect(() => {
+    setIsOpen(false);
+  }, [location.pathname, location.search]);
+
+  // Prevent background scrolling while mobile navigation is open.
+  useEffect(() => {
+    document.body.style.overflow = isOpen ? "hidden" : "";
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Determine whether a navigation item is currently active.
+  const isItemActive = (item) => {
+    const currentPath = location.pathname + location.search;
+
+    if (item.path === "/") {
+      return location.pathname === "/";
+    }
+
+    return currentPath === item.path;
   };
 
-  const linkClasses = (path) =>
-    `relative text-white px-3 py-2 rounded-lg transition-all duration-300 
-     hover:scale-110 
-     ${activeLink === path ? 
-       "bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-[length:200%_100%] animate-shine" 
-       : "hover:bg-gray-900 hover:text-blue-400 hover:p-2"}`;
+  // One consistent style system for both desktop and mobile.
+  const linkClass = (item, mobile = false) => {
+    const isActive = isItemActive(item);
 
-  // Handle swipe down to close
-  const handleTouchStart = (e) => setTouchStartY(e.touches[0].clientY);
-
-  const handleTouchMove = (e) => {
-    if (!touchStartY) return;
-    const currentY = e.touches[0].clientY;
-    if (currentY - touchStartY > 80) { // swipe down threshold
-      setIsOpen(false);
-    }
+    return [
+      "flex items-center justify-center rounded-xl",
+      "font-bold transition-all duration-200",
+      "min-h-[44px]",
+      mobile ? "w-full px-4 text-sm" : "px-3 text-sm",
+      isActive
+        ? "bg-yellow-400 text-black shadow-lg shadow-yellow-400/10"
+        : "text-gray-200 hover:bg-white/10 hover:text-yellow-400",
+    ].join(" ");
   };
 
   return (
-    <nav className="fixed top-0 left-0 w-full bg-gray-900 shadow-md z-50">
-      <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
-        {/* Logo + Title */}
-        <div className="flex items-center space-x-3">
+    <nav
+      className="fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-black/95 shadow-2xl backdrop-blur-xl"
+      aria-label="Main navigation"
+    >
+      <div className="mx-auto flex h-16 w-full items-center justify-between px-3 sm:px-5 lg:px-8">
+        {/* Brand */}
+        <NavLink
+          to="/"
+          className="flex min-w-0 items-center gap-2.5"
+          aria-label="PowerTips home"
+        >
           <img
             src={logo}
-            alt="logo"
-            className="h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-full shadow-xl"
+            alt=""
+            className="h-10 w-10 shrink-0 rounded-full border border-yellow-400/30 object-cover shadow-lg shadow-yellow-400/10 sm:h-11 sm:w-11"
           />
-          <h1 className="text-2xl font-bold text-white">PowerTips</h1>
-        </div>
 
-        {/* Desktop Links */}
-        <div className="hidden md:flex space-x-8 lg:space-x-10">
-          {["/", "/favorites", "/history", "/news", "/login", "/register"].map((path) => (
-            <button
-              key={path}
-              onClick={() => handleLinkClick(path)}
-              className={linkClasses(path)}
+          <div className="min-w-0">
+            <div className="truncate text-base font-black uppercase tracking-wide text-white sm:text-lg">
+              Power<span className="text-yellow-400">Tips</span>
+            </div>
+
+            <div className="hidden text-[9px] font-semibold uppercase tracking-[0.2em] text-gray-500 sm:block">
+              Football Predictions
+            </div>
+          </div>
+        </NavLink>
+
+        {/* Desktop navigation */}
+        <div className="hidden items-center gap-1 md:flex lg:gap-2">
+          {navItems.map((item) => (
+            <NavLink
+              key={item.path}
+              to={item.path}
+              className={linkClass(item)}
             >
-              {path === "/" ? "Home" : path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
-            </button>
+              {item.label}
+            </NavLink>
           ))}
         </div>
 
-        {/* Mobile Menu Button */}
-        <div className="md:hidden">
-          <button onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <FaTimes size={32} className='text-red-600' /> : <FaBars size={32} className='text-green-600' />}
-          </button>
-        </div>
+        {/* Mobile menu button */}
+        <button
+          type="button"
+          onClick={() => setIsOpen((open) => !open)}
+          className="flex h-11 w-11 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-yellow-400 transition-colors hover:bg-white/10 md:hidden"
+          aria-label={
+            isOpen ? "Close navigation menu" : "Open navigation menu"
+          }
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation"
+        >
+          {isOpen ? <FaTimes size={22} /> : <FaBars size={22} />}
+        </button>
       </div>
 
-      {/* Background Overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm transition-opacity duration-300"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
-
-      {/* Mobile Action Sheet */}
+      {/* Mobile navigation */}
       {isOpen && (
         <div
-          ref={sheetRef}
-          className="fixed bottom-0 left-0 w-full  rounded-t-2xl shadow-lg 
-                     flex flex-col items-center space-y-4 py-6 md:hidden animate-slideUp"
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
+          id="mobile-navigation"
+          className="border-t border-white/10 bg-black/98 px-3 pb-5 pt-3 shadow-2xl md:hidden"
         >
-          {/* Close Button */}
-          <button
-            onClick={() => setIsOpen(false)}
-            className="absolute top-3 right-4 text-white hover:text-white transform transition duration-300 hover:scale-125 hover:rotate-90 bg-red-500/10 hover:bg-red-500 rounded-full p-2 shadow-md"
-          >
-            <FaTimes size={20} />
-          </button>
+          {/* Mobile header */}
+          <div className="mb-3 rounded-2xl border border-yellow-400/10 bg-gradient-to-r from-yellow-400/10 to-transparent p-3">
+            <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+              PowerTips
+            </p>
 
-          {/* Drag Handle */}
-          <div className="w-12 h-1.5 bg-gray-500 rounded-full mb-6"></div>
+            <p className="mt-1 text-sm font-bold text-white">
+              Football predictions & match analysis
+            </p>
+          </div>
 
-          {["/", "/favorites", "/history", "/news", "/login", "/register"].map((path) => (
-            <button
-              key={path}
-              onClick={() => handleLinkClick(path)}
-              className={linkClasses(path)}
+          {/* Same navigation links as desktop */}
+          <div className="grid gap-1.5">
+            {navItems.map((item) => (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                className={linkClass(item, true)}
+              >
+                {item.label}
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Telegram */}
+          <div className="mt-4 border-t border-white/10 pt-4">
+            <a
+              href="https://t.me/powertipsterbets"
+              target="_blank"
+              rel="noreferrer"
+              className="flex min-h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 text-sm font-bold text-sky-300 transition-colors hover:bg-sky-500/20"
             >
-              {path === "/" ? "Home" : path.replace("/", "").charAt(0).toUpperCase() + path.slice(2)}
-            </button>
-          ))}
+              <FaTelegramPlane size={18} />
+              Join us on Telegram
+            </a>
+          </div>
         </div>
       )}
-
-      {/* Keyframe Animation */}
-      <style>{`
-        @keyframes slideUp {
-          from { transform: translateY(100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-        .animate-slideUp { animation: slideUp 0.3s ease-out; }
-      `}</style>
     </nav>
   );
 }
 
 export default Navbar;
+
