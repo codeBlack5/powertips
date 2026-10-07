@@ -433,20 +433,45 @@ function Home() {
   return (
     <div className="relative">
       <section className="px-2 sm:px-4 pt-24 pb-8">
-        {/* Telegram Section */}
-        <div className="bg-gray-900 bg-opacity-50 text-center p-4 sm:p-6 rounded-lg max-w-xl mx-auto">
-          <p className="mb-3 text-red-600 text-lg sm:text-xl">
-            Get access to <span className="glow-text">VIP tips</span> on Telegram
-          </p>
-          <a
-            href="https://t.me/powertipsterbets"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded hover:bg-blue-100 hover:text-blue-600 transition text-sm sm:text-base"
-          >
-            Join Telegram Group
-          </a>
-        </div>
+        {/* Telegram Community Banner */}
+        <section className="relative mx-auto max-w-3xl overflow-hidden rounded-2xl border border-yellow-400/20 bg-gradient-to-br from-black via-gray-950 to-slate-900 shadow-2xl shadow-black/40">
+          <div className="absolute -right-16 -top-16 h-40 w-40 rounded-full bg-sky-500/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-16 h-40 w-40 rounded-full bg-yellow-400/10 blur-3xl" />
+
+          <div className="relative flex flex-col items-center gap-4 px-5 py-6 text-center sm:px-8 sm:py-7 md:flex-row md:justify-between md:text-left">
+            <div className="min-w-0">
+              <div className="mb-2 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-xs font-bold uppercase tracking-wider text-sky-300">
+                <span className="h-2 w-2 rounded-full bg-sky-400 shadow-[0_0_8px_rgba(56,189,248,0.8)]" />
+                PowerTips Community
+              </div>
+
+              <h2 className="text-xl font-black text-white sm:text-2xl">
+                Get the latest <span className="text-yellow-400">football tips</span>
+              </h2>
+
+              <p className="mt-1 max-w-xl text-sm leading-6 text-gray-400 sm:text-base">
+                Join our Telegram community for VIP tips, match updates and
+                football prediction insights.
+              </p>
+            </div>
+
+            <a
+              href="https://t.me/powertipsterbets"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-[46px] shrink-0 items-center justify-center gap-2 rounded-xl bg-sky-500 px-5 py-3 text-sm font-black text-white shadow-lg shadow-sky-500/20 transition-all duration-200 hover:-translate-y-0.5 hover:bg-sky-400 active:translate-y-0 sm:px-6"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                className="h-5 w-5 fill-current"
+                aria-hidden="true"
+              >
+                <path d="M21.8 3.2 18.7 20c-.2 1.2-.9 1.5-1.8.9l-5-3.7-2.4 2.3c-.3.3-.5.5-1 .5l.4-5.1 9.3-8.4c.4-.4-.1-.6-.6-.2L6.1 13.6 1.2 12c-1.1-.3-1.1-1.1.2-1.6L20.3 3c.9-.3 1.7.2 1.5.2Z" />
+              </svg>
+              Join Telegram
+            </a>
+          </div>
+        </section>
 
         {/* Search & Filter */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mt-6 max-w-xl mx-auto">

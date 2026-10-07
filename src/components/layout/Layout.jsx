@@ -1,25 +1,31 @@
-import React from 'react'
-import Navbar from './Navbar'
-import { Outlet } from 'react-router-dom'
-import Footer from './Footer'
-import bg from '../assets/images/kickoff.jpg'
+import React from "react";
+import Navbar from "./Navbar";
+import { Outlet } from "react-router-dom";
+import Footer from "./Footer";
+import bg from "../assets/images/kickoff.jpg";
 
 function Layout() {
   return (
-    <section className="relative flex flex-col min-h-screen">
-      {/* Fixed background visible on all pages */}
+    <section className="relative flex min-h-screen flex-col bg-black">
+      {/* Fixed football background */}
       <div
-        className="fixed inset-0 bg-cover bg-no-repeat bg-center z-0"
+        className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${bg})` }}
-      ></div>
+        aria-hidden="true"
+      />
 
-      {/* Foreground content */}
-      <div className="relative z-10 flex flex-col min-h-screen">
+      {/* Consistent dark overlay for readability */}
+      <div
+        className="fixed inset-0 z-0 bg-black/75"
+        aria-hidden="true"
+      />
+
+      {/* Foreground application */}
+      <div className="relative z-10 flex min-h-screen flex-col">
         <Navbar />
 
-        {/* Scrollable main content */}
-        <main className="flex-1">
-          <div className="px-4 sm:px-6 py-8">
+        <main className="flex-1 pt-16">
+          <div className="px-3 py-6 sm:px-6 sm:py-8">
             <Outlet />
           </div>
         </main>
@@ -30,4 +36,4 @@ function Layout() {
   );
 }
 
-export default Layout
+export default Layout;
