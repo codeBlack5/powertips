@@ -1,14 +1,33 @@
 import React from "react";
 import { motion } from "framer-motion";
-import homeLogo from "../assets/images/pedri.jpg";
-import awayLogo from "../assets/images/vini.jpg";
+
+import defaultHomeLogo from "../assets/images/pedri.jpg";
+import defaultAwayLogo from "../assets/images/vini.jpg";
+
+function formatKickoff(kickoff) {
+  if (!kickoff) return "TBD";
+
+  const date = new Date(kickoff);
+
+  if (Number.isNaN(date.getTime())) return "TBD";
+
+  return date.toLocaleString([], {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function MatchCard({ match, featured = false }) {
   const {
     homeTeam,
     awayTeam,
+    homeLogo,
+    awayLogo,
     prediction,
-    time,
+    kickoff,
     type = "free",
     league,
     odds,
@@ -36,8 +55,8 @@ function MatchCard({ match, featured = false }) {
         </div>
       )}
 
-      <div className="mb-5 flex items-center justify-between gap-4 text-xs">
-        <span className="min-w-0 truncate pr-2 font-semibold uppercase tracking-wider text-gray-400">
+      <div className="mb-5 flex items-center justify-between gap-3 text-xs">
+        <span className="min-w-0 truncate font-semibold uppercase tracking-wider text-gray-400">
           {league || "Football"}
         </span>
 
@@ -55,17 +74,19 @@ function MatchCard({ match, featured = false }) {
       <div className="mb-5 flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 flex-col items-center text-center">
           <img
-            src={homeLogo}
+            src={homeLogo || defaultHomeLogo}
             alt={homeTeam}
             className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
           />
+
           <span className="text-sm font-bold text-white">{homeTeam}</span>
         </div>
 
-        <div className="shrink-0 text-center">
-          <span className="block text-[10px] font-bold uppercase tracking-widest text-gray-500">
-            {time || "TBD"}
+        <div className="w-20 shrink-0 text-center">
+          <span className="block text-[10px] font-bold leading-4 uppercase tracking-wide text-gray-500">
+            {formatKickoff(kickoff)}
           </span>
+
           <span className="mt-1 block text-lg font-black text-gray-500">
             VS
           </span>
@@ -73,10 +94,11 @@ function MatchCard({ match, featured = false }) {
 
         <div className="flex min-w-0 flex-1 flex-col items-center text-center">
           <img
-            src={awayLogo}
+            src={awayLogo || defaultAwayLogo}
             alt={awayTeam}
             className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
           />
+
           <span className="text-sm font-bold text-white">{awayTeam}</span>
         </div>
       </div>
@@ -98,15 +120,16 @@ function MatchCard({ match, featured = false }) {
           <div className="mt-3 flex items-center justify-center gap-4 text-xs">
             {odds && (
               <span className="text-gray-400">
-                Odds{" "}
-                <strong className="text-white">{odds}</strong>
+                Odds <strong className="text-white">{odds}</strong>
               </span>
             )}
 
             {confidence && (
               <span className="text-gray-400">
                 Confidence{" "}
-                <strong className="text-emerald-400">{confidence}%</strong>
+                <strong className="text-emerald-400">
+                  {confidence}%
+                </strong>
               </span>
             )}
           </div>
@@ -121,7 +144,7 @@ function MatchCard({ match, featured = false }) {
 
       {isVIP && (
         <a
-          href="https://t.me/+JVfBp3Q03OU5ZTk0"
+          href="https://t.me/+g6lqmcWDTpAxZTM0"
           target="_blank"
           rel="noopener noreferrer"
           className="mt-4 flex min-h-[44px] items-center justify-center rounded-xl bg-yellow-400 px-4 py-2 text-sm font-black text-black transition hover:bg-yellow-300"

@@ -1,58 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import api from "../../api/client";
 import MatchCard from "../files/MatchCard";
-
-const featuredMatch = {
-  homeTeam: "Real Madrid",
-  awayTeam: "Villarreal",
-  prediction: "Real Madrid Win",
-  time: "20:00",
-  type: "free",
-  league: "La Liga",
-  odds: "1.60",
-  confidence: 86,
-  analysis:
-    "Strong home form, attacking quality and squad depth make Real Madrid the standout prediction.",
-};
-
-const todayPredictions = [
-  {
-    homeTeam: "Nottingham Forest",
-    awayTeam: "Chelsea",
-    prediction: "Chelsea Win",
-    time: "17:30",
-    type: "free",
-    league: "Premier League",
-    odds: "1.85",
-    confidence: 79,
-    analysis:
-      "Chelsea's attacking depth gives them an edge in this away fixture.",
-  },
-  {
-    homeTeam: "Charlotte FC",
-    awayTeam: "Philadelphia Union",
-    prediction: "Charlotte FC Win",
-    time: "20:00",
-    type: "free",
-    league: "MLS",
-    odds: "2.40",
-    confidence: 71,
-    analysis:
-      "Home advantage and recent momentum make Charlotte an interesting selection.",
-  },
-  {
-    homeTeam: "Tottenham",
-    awayTeam: "Aston Villa",
-    prediction: "Tottenham Win",
-    time: "18:30",
-    type: "free",
-    league: "Premier League",
-    odds: "2.50",
-    confidence: 68,
-    analysis:
-      "Tottenham's attacking approach gives them the edge in a potentially open match.",
-  },
-];
 
 const platformStats = [
   { label: "Predictions", value: "100+" },
@@ -62,6 +11,35 @@ const platformStats = [
 ];
 
 function Home() {
+  const [predictions, setPredictions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchPredictions = async () => {
+      try {
+        setLoading(true);
+        setError("");
+
+        const response = await api.get("/predictions");
+        setPredictions(response.data);
+      } catch (err) {
+        console.error("Failed to load predictions:", err);
+        setError("Unable to load predictions right now.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPredictions();
+  }, []);
+
+  const featuredMatch = predictions[0];
+
+  const todayPredictions = predictions.filter(
+    (prediction) => prediction.type === "free"
+  );
+
   return (
     <main className="px-4 pb-16 pt-24 sm:px-6 lg:px-8">
       <div className="pt-page">
@@ -138,7 +116,27 @@ function Home() {
           </div>
 
           <div className="mx-auto max-w-2xl">
-            <MatchCard match={featuredMatch} featured />
+            {loading && (
+              <div className="pt-card p-8 text-center text-gray-400">
+                Loading featured prediction...
+              </div>
+            )}
+
+            {!loading && error && (
+              <div className="pt-card p-8 text-center text-red-400">
+                {error}
+              </div>
+            )}
+
+            {!loading && !error && featuredMatch && (
+              <MatchCard match={featuredMatch} featured />
+            )}
+
+            {!loading && !error && !featuredMatch && (
+              <div className="pt-card p-8 text-center text-gray-400">
+                No predictions available.
+              </div>
+            )}
           </div>
         </section>
 
@@ -160,14 +158,28 @@ function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
-            {todayPredictions.map((match, index) => (
-              <MatchCard
-                key={`${match.homeTeam}-${index}`}
-                match={match}
-              />
-            ))}
-          </div>
+          {loading && (
+            <div className="pt-card p-8 text-center text-gray-400">
+              Loading predictions...
+            </div>
+          )}
+
+          {!loading && !error && todayPredictions.length === 0 && (
+            <div className="pt-card p-8 text-center text-gray-400">
+              No free predictions available.
+            </div>
+          )}
+
+          {!loading && !error && todayPredictions.length > 0 && (
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {todayPredictions.map((match, index) => (
+                <MatchCard
+                  key={`${match.id}-${index}`}
+                  match={match}
+                />
+              ))}
+            </div>
+          )}
         </section>
 
         {/* Platform Explanation */}
@@ -233,7 +245,7 @@ function Home() {
             </div>
 
             <a
-              href="https://t.me/powertipsterbets"
+              href="https://t.me/+g6lqmcWDTpAxZTM0"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-[46px] shrink-0 items-center justify-center rounded-xl bg-sky-500 px-5 py-3 text-sm font-black text-white transition hover:bg-sky-400"

@@ -26,7 +26,7 @@ function Footer() {
         </button>
 
         <button
-          onClick={() => trackClick("Telegram", "https://t.me/powertipsterbets")}
+          onClick={() => trackClick("Telegram", "https://t.me/+g6lqmcWDTpAxZTM0")}
           className="flex items-center gap-2 hover:text-blue-400 transition text-lg"
         >
           <FaTelegramPlane /> Telegram

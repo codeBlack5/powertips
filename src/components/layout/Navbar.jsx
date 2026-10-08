@@ -147,7 +147,7 @@ function Navbar() {
           {/* Telegram */}
           <div className="mt-4 border-t border-white/10 pt-4">
             <a
-              href="https://t.me/powertipsterbets"
+              href="https://t.me/+g6lqmcWDTpAxZTM0"
               target="_blank"
               rel="noreferrer"
               className="flex min-h-[46px] w-full items-center justify-center gap-2 rounded-xl border border-sky-400/30 bg-sky-500/10 px-4 text-sm font-bold text-sky-300 transition-colors hover:bg-sky-500/20"
