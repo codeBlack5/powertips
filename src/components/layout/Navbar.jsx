@@ -126,6 +126,13 @@ function Navbar() {
 
           {isAuthenticated ? (
             <>
+              <NavLink
+                to="/profile"
+                className={authLinkClass()}
+              >
+                Profile
+              </NavLink>
+
               <span
                 className="mx-1 hidden max-w-[140px] truncate px-2 text-xs font-semibold text-yellow-400 lg:block"
                 title={user?.name}
@@ -200,6 +207,13 @@ function Navbar() {
 
             {isAuthenticated ? (
               <>
+                <NavLink
+                  to="/profile"
+                  className={authLinkClass(true)}
+                >
+                  Profile
+                </NavLink>
+
                 <div className="mt-2 rounded-xl border border-yellow-400/10 bg-yellow-400/5 px-4 py-3 text-center">
                   <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                     Signed in as
