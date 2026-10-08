@@ -297,7 +297,7 @@ function History() {
                 </p>
 
                 <p className="mt-2 text-sm text-gray-500">
-                  Completed predicion results will appear here.
+                  Completed prediction results will appear here.
                 </p>
               </div>
             )}
