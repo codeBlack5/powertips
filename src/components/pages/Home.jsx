@@ -245,7 +245,7 @@ function Home() {
             </div>
 
             <a
-              href="https://t.me/powertipsterbets"
+              href="https://t.me/+g6lqmcWDTpAxZTM0"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex min-h-[46px] shrink-0 items-center justify-center rounded-xl bg-sky-500 px-5 py-3 text-sm font-black text-white transition hover:bg-sky-400"
