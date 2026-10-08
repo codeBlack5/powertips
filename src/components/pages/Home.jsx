@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import api from "../../api/client";
 import MatchCard from "../files/MatchCard";
+import PredictionManager from "../admin/PredictionManager";
+import { useAuth } from "../../context/AuthContext";
 
 const platformStats = [
   { label: "Predictions", value: "100+" },
@@ -11,6 +13,7 @@ const platformStats = [
 ];
 
 function Home() {
+  const { user } = useAuth();
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -182,7 +185,12 @@ function Home() {
           )}
         </section>
 
+        {user?.role === "admin" && (
+          <PredictionManager />
+        )}
+
         {/* Platform Explanation */}
+
         <section className="mt-12 grid grid-cols-1 gap-5 lg:grid-cols-3">
           <div className="pt-card p-6 lg:col-span-2">
             <p className="mb-2 text-xs font-black uppercase tracking-[0.2em] text-yellow-400">
