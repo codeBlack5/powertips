@@ -33,9 +33,31 @@ function MatchCard({ match, featured = false }) {
     odds,
     confidence,
     analysis,
+    status = "pending",
   } = match;
 
   const isVIP = type === "vip";
+
+  const statusStyles = {
+    pending: {
+      label: "Pending",
+      className: "border-yellow-400/20 bg-yellow-400/10 text-yellow-400",
+    },
+    won: {
+      label: "Won",
+      className: "border-emerald-400/20 bg-emerald-400/10 text-emerald-400",
+    },
+    lost: {
+      label: "Lost",
+      className: "border-red-400/20 bg-red-400/10 text-red-400",
+    },
+    void: {
+      label: "Void",
+      className: "border-gray-400/20 bg-gray-400/10 text-gray-300",
+    },
+  };
+
+  const currentStatus = statusStyles[status] || statusStyles.pending;
 
   return (
     <motion.article
@@ -60,15 +82,23 @@ function MatchCard({ match, featured = false }) {
           {league || "Football"}
         </span>
 
-        <span
-          className={`shrink-0 rounded-full px-2.5 py-1 font-bold uppercase ${
-            isVIP
-              ? "bg-yellow-400/10 text-yellow-400"
-              : "bg-emerald-400/10 text-emerald-400"
-          }`}
-        >
-          {type}
-        </span>
+        <div className="flex shrink-0 items-center gap-2">
+          <span
+            className={`rounded-full border px-2.5 py-1 font-bold uppercase ${
+              isVIP
+                ? "border-yellow-400/20 bg-yellow-400/10 text-yellow-400"
+                : "border-emerald-400/20 bg-emerald-400/10 text-emerald-400"
+            }`}
+          >
+            {type}
+          </span>
+
+          <span
+            className={`rounded-full border px-2.5 py-1 font-bold uppercase ${currentStatus.className}`}
+          >
+            {currentStatus.label}
+          </span>
+        </div>
       </div>
 
       <div className="mb-5 flex items-center justify-between gap-3">
@@ -83,7 +113,7 @@ function MatchCard({ match, featured = false }) {
         </div>
 
         <div className="w-20 shrink-0 text-center">
-          <span className="block text-[10px] font-bold leading-4 uppercase tracking-wide text-gray-500">
+          <span className="block text-[10px] font-bold uppercase leading-4 tracking-wide text-gray-500">
             {formatKickoff(kickoff)}
           </span>
 
@@ -110,7 +140,7 @@ function MatchCard({ match, featured = false }) {
 
         <p
           className={`text-lg font-black ${
-            isVIP ? "blur-sm text-yellow-400" : "text-yellow-400"
+            isVIP ? "text-yellow-400 blur-sm" : "text-yellow-400"
           }`}
         >
           {prediction}

@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import api from "../../api/client";
 
 function Register() {
   const [firstName, setfirstName] = useState("");
@@ -27,10 +28,28 @@ function Register() {
 
     setLoading(true);
 
-    setTimeout(() => {
+    try {
+      const response = await api.post("/auth/register", {
+        name: `${firstName.trim()} ${lastName.trim()}`,
+        email: email.trim(),
+        password,
+        password_confirmation: passwordConfirmation,
+      });
+
+      console.log("Registration successful:", response.data);
+
+      alert("Registration successful! You can now log in.");
+    } catch (error) {
+      const message =
+        error.response?.data?.error?.join?.(", ") ||
+        error.response?.data?.error ||
+        "Registration failed. Please try again.";
+
+      alert(message);
+      console.error("Registration failed:", error);
+    } finally {
       setLoading(false);
-      alert("Registered successfully! (Hook to API later)");
-    }, 1500);
+    }
   };
 
 

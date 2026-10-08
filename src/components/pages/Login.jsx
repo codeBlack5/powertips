@@ -1,20 +1,46 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../../api/client";
+import { useAuth } from "../../context/AuthContext";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const { login } = useAuth();
+  const navigate = useNavigate();
+
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email.trim() || !password) {
+      return;
+    }
+
     setLoading(true);
 
-    // 🔗 Later: call Rails API here
-    setTimeout(() => {
+    try {
+      const response = await api.post("/auth/login", {
+        email: email.trim(),
+        password,
+      });
+
+      login(response.data);
+
+      alert("Login successful!");
+      navigate("/");
+    } catch (error) {
+      const message =
+        error.response?.data?.error?.join?.(", ") ||
+        error.response?.data?.error ||
+        "Login failed. Please check your email and password.";
+
+      alert(message);
+      console.error("Login failed:", error);
+    } finally {
       setLoading(false);
-      alert("Logged in successfully! (Hook to API later)");
-    }, 1500);
+    }
   };
 
   return (
