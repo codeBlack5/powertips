@@ -51,6 +51,11 @@ export function AuthProvider({ children }) {
     clearAuth();
   }, [clearAuth]);
 
+  const updateStoredUser = useCallback((updatedUser) => {
+    localStorage.setItem(USER_KEY, JSON.stringify(updatedUser));
+    setUser(updatedUser);
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
 
@@ -100,8 +105,9 @@ export function AuthProvider({ children }) {
       isAuthenticated: Boolean(token && user),
       login,
       logout,
+      updateStoredUser,
     }),
-    [token, user, loading, login, logout]
+    [token, user, loading, login, logout, updateStoredUser]
   );
 
   return (

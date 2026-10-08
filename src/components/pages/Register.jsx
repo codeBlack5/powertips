@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { Link } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../api/client";
 
 function Register() {
@@ -9,6 +10,8 @@ function Register() {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
 
   // Refs for inputs
   const lastNameRef = useRef(null);
@@ -124,27 +127,55 @@ function Register() {
             required
           />
 
-          <input
-            ref={passwordRef}
-            type="password"
-            placeholder="Password"
-            className={inputClass(password)}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, passwordConfRef)}
-            required
-          />
+          <div className="relative">
+            <input
+              ref={passwordRef}
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className={inputClass(password) + " pr-12"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, passwordConfRef)}
+              required
+            />
 
-          <input
-            ref={passwordConfRef}
-            type="password"
-            placeholder="Confirm Password"
-            className={inputClass(passwordConfirmation, true, password)}
-            value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
-            onKeyDown={(e) => handleKeyDown(e, null, handleRegister)} // Submit form on Enter
-            required
-          />
+            <button
+              type="button"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 transition hover:text-blue-400"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
+
+          <div className="relative">
+            <input
+              ref={passwordConfRef}
+              type={showPasswordConfirmation ? "text" : "password"}
+              placeholder="Confirm Password"
+              className={inputClass(passwordConfirmation, true, password) + " pr-12"}
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              onKeyDown={(e) => handleKeyDown(e, null, handleRegister)}
+              required
+            />
+
+            <button
+              type="button"
+              onClick={() =>
+                setShowPasswordConfirmation((current) => !current)
+              }
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 transition hover:text-blue-400"
+              aria-label={
+                showPasswordConfirmation
+                  ? "Hide password confirmation"
+                  : "Show password confirmation"
+              }
+            >
+              {showPasswordConfirmation ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           <button
             type="submit"

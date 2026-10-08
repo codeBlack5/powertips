@@ -11,6 +11,7 @@ import AppWrapper from "./AppWrapper";
 import { AuthProvider } from "./context/AuthContext";
 import Favorites from "./components/pages/Favorites";
 import History from "./components/pages/History";
+import Profile from "./components/pages/Profile";
 
 function PageTracker() {
   const location = useLocation();
@@ -39,6 +40,7 @@ function App() {
           <Route path='/register' element={<Register/>}/>
           <Route path="/favorites" element={<Favorites/>}/>
           <Route path="/history" element={<History/>}/>
+          <Route path="/profile" element={<Profile/>}/>
         </Route>
         </Routes>
       </AppWrapper>
