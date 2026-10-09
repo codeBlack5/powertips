@@ -4,6 +4,9 @@ import api from "../../api/client";
 import MatchCard from "../files/MatchCard";
 import PredictionManager from "../admin/PredictionManager";
 import MatchResultsManager from "../admin/MatchResultsManager";
+import TeamManager from "../admin/TeamManager";
+import LeagueManager from "../admin/LeagueManager";
+import MatchManager from "../admin/MatchManager";
 import { useAuth } from "../../context/AuthContext";
 
 const platformStats = [
@@ -232,6 +235,9 @@ function Home() {
 
         {user?.role === "admin" && (
           <>
+            <TeamManager />
+            <LeagueManager />
+            <MatchManager />
             <PredictionManager />
             <MatchResultsManager onResultSaved={refreshPredictions} />
           </>
