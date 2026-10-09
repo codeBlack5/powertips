@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import api from "../../api/client";
 import MatchCard from "../files/MatchCard";
 import PredictionManager from "../admin/PredictionManager";
+import MatchResultsManager from "../admin/MatchResultsManager";
 import { useAuth } from "../../context/AuthContext";
 
 const platformStats = [
@@ -13,17 +14,33 @@ const platformStats = [
 ];
 
 function Home() {
+  const location = useLocation();
   const { user } = useAuth();
   const [predictions, setPredictions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const focusPredictionId = location.state?.focusPredictionId;
+  const focusedPrediction = predictions.find(
+    (prediction) => String(prediction.id) === String(focusPredictionId)
+  );
+
+  const refreshPredictions = async () => {
+    try {
+      setError("");
+      const response = await api.get("/predictions");
+      setPredictions(response.data);
+    } catch (err) {
+      console.error("Failed to refresh predictions:", err);
+      setError("Unable to refresh predictions right now.");
+      throw err;
+    }
+  };
 
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
         setError("");
-
         const response = await api.get("/predictions");
         setPredictions(response.data);
       } catch (err) {
@@ -35,7 +52,16 @@ function Home() {
     };
 
     fetchPredictions();
-  }, []);
+  }, [location.key]);
+
+  useEffect(() => {
+    if (focusPredictionId && !loading && focusedPrediction) {
+      document.getElementById("focused-prediction")?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+    }
+  }, [focusPredictionId, loading, focusedPrediction]);
 
   const featuredMatch = predictions[0];
 
@@ -143,6 +169,25 @@ function Home() {
           </div>
         </section>
 
+        {/* Newly created prediction */}
+        {!loading && focusedPrediction && (
+          <section id="focused-prediction" className="mt-12 scroll-mt-24">
+            <div className="mb-5">
+              <p className="mb-1 text-xs font-black uppercase tracking-[0.2em] text-yellow-400">
+                Successfully Added
+              </p>
+              <h2 className="pt-section-title">Your New Prediction</h2>
+              <p className="mt-2 text-sm text-gray-400">
+                Here is the prediction you just created.
+              </p>
+            </div>
+
+            <div className="mx-auto max-w-2xl rounded-2xl ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/10">
+              <MatchCard match={focusedPrediction} featured />
+            </div>
+          </section>
+        )}
+
         {/* Today's Predictions */}
         <section id="today" className="mt-12 scroll-mt-24">
           <div className="mb-5">
@@ -186,7 +231,10 @@ function Home() {
         </section>
 
         {user?.role === "admin" && (
-          <PredictionManager />
+          <>
+            <PredictionManager />
+            <MatchResultsManager onResultSaved={refreshPredictions} />
+          </>
         )}
 
         {/* Platform Explanation */}

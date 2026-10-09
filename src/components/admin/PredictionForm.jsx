@@ -3,15 +3,50 @@ import React, { useEffect, useMemo, useState } from "react";
 const MARKET_OPTIONS = [
   "Match Result",
   "Double Chance",
+  "Draw No Bet",
   "Over/Under",
   "Both Teams To Score",
+  "Correct Score",
+  "Total Goals Odd/Even",
+  "Exact Total Goals",
+  "Home Team Goals",
+  "Away Team Goals",
+  "Home Team To Score",
+  "Away Team To Score",
+  "Winning Margin",
+  "Win to Nil",
+  "Result & BTTS",
 ];
+
+const GOAL_LINES = ["0.5", "1.5", "2.5", "3.5", "4.5"];
 
 const SELECTION_OPTIONS = {
   "Match Result": ["Home Win", "Draw", "Away Win"],
   "Double Chance": ["Home or Draw", "Home or Away", "Draw or Away"],
-  "Over/Under": ["Over 0.5", "Over 1.5", "Over 2.5", "Over 3.5", "Under 0.5", "Under 1.5", "Under 2.5", "Under 3.5"],
+  "Draw No Bet": ["Home Win", "Away Win"],
+  "Over/Under": GOAL_LINES.flatMap((line) => [`Over ${line}`, `Under ${line}`]),
   "Both Teams To Score": ["Yes", "No"],
+  "Correct Score": [
+    "0-0", "1-0", "0-1", "1-1", "2-0", "0-2", "2-1", "1-2",
+    "2-2", "3-0", "0-3", "3-1", "1-3", "3-2", "2-3", "3-3",
+    "Other Score",
+  ],
+  "Total Goals Odd/Even": ["Odd", "Even"],
+  "Exact Total Goals": ["0", "1", "2", "3", "4", "5", "6+"],
+  "Home Team Goals": GOAL_LINES.flatMap((line) => [`Over ${line}`, `Under ${line}`]),
+  "Away Team Goals": GOAL_LINES.flatMap((line) => [`Over ${line}`, `Under ${line}`]),
+  "Home Team To Score": ["Yes", "No"],
+  "Away Team To Score": ["Yes", "No"],
+  "Winning Margin": [
+    "Home by 1", "Home by 2", "Home by 3+", "Draw",
+    "Away by 1", "Away by 2", "Away by 3+",
+  ],
+  "Win to Nil": ["Home Win to Nil", "Away Win to Nil", "Neither Team"],
+  "Result & BTTS": [
+    "Home Win & Yes", "Home Win & No",
+    "Draw & Yes", "Draw & No",
+    "Away Win & Yes", "Away Win & No",
+  ],
 };
 
 const EMPTY_FORM = {
@@ -21,7 +56,6 @@ const EMPTY_FORM = {
   odds: "",
   confidence: "",
   prediction_type: "free",
-  status: "pending",
   analysis: "",
 };
 
@@ -44,12 +78,11 @@ function PredictionForm({
         selection:
           initialData.selection ||
           initialData.prediction ||
-          SELECTION_OPTIONS[initialData.market || "Match Result"][0],
+          (SELECTION_OPTIONS[initialData.market || "Match Result"] || SELECTION_OPTIONS["Match Result"])[0],
         odds: initialData.odds ?? "",
         confidence: initialData.confidence ?? "",
         prediction_type:
           initialData.predictionType || initialData.type || "free",
-        status: initialData.status || "pending",
         analysis: initialData.analysis || "",
       });
     } else {
@@ -90,7 +123,6 @@ function PredictionForm({
       odds: Number(form.odds),
       confidence: Number(form.confidence),
       prediction_type: form.prediction_type,
-      status: form.status,
       analysis: form.analysis,
     });
   };
@@ -208,22 +240,6 @@ function PredictionForm({
           </select>
         </div>
 
-        <div>
-          <label className="mb-2 block text-sm font-bold text-gray-300">
-            Status
-          </label>
-          <select
-            name="status"
-            value={form.status}
-            onChange={handleChange}
-            className="pt-input w-full"
-          >
-            <option value="pending">Pending</option>
-            <option value="won">Won</option>
-            <option value="lost">Lost</option>
-            <option value="void">Void</option>
-          </select>
-        </div>
       </div>
 
       <div>

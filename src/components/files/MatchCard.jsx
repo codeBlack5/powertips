@@ -34,9 +34,11 @@ function MatchCard({ match, featured = false }) {
     confidence,
     analysis,
     status = "pending",
+    locked = false,
   } = match;
 
   const isVIP = type === "vip";
+  const isLocked = isVIP && locked;
 
   const statusStyles = {
     pending: {
@@ -140,13 +142,13 @@ function MatchCard({ match, featured = false }) {
 
         <p
           className={`text-lg font-black ${
-            isVIP ? "text-yellow-400 blur-sm" : "text-yellow-400"
+            isLocked ? "text-gray-300" : "text-yellow-400"
           }`}
         >
           {prediction}
         </p>
 
-        {!isVIP && (odds || confidence) && (
+        {!isLocked && (odds || confidence) && (
           <div className="mt-3 flex items-center justify-center gap-4 text-xs">
             {odds && (
               <span className="text-gray-400">
@@ -166,13 +168,13 @@ function MatchCard({ match, featured = false }) {
         )}
       </div>
 
-      {analysis && !isVIP && (
+      {analysis && !isLocked && (
         <p className="mt-4 line-clamp-2 text-sm leading-6 text-gray-400">
           {analysis}
         </p>
       )}
 
-      {isVIP && (
+      {isLocked && (
         <a
           href="https://t.me/+g6lqmcWDTpAxZTM0"
           target="_blank"

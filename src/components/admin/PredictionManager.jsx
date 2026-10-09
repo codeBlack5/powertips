@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import api from "../../api/client";
 import PredictionForm from "./PredictionForm";
 
 function PredictionManager() {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -50,14 +52,24 @@ function PredictionManager() {
 
       if (editingPrediction) {
         await api.patch(`/predictions/${editingPrediction.id}`, data);
+        setEditingPrediction(null);
         setMessage("Prediction updated successfully.");
+        await fetchData();
       } else {
-        await api.post("/predictions", data);
-        setMessage("Prediction created successfully.");
-      }
+        const response = await api.post("/predictions", data);
+        const createdPrediction = response.data?.prediction || response.data;
 
-      setEditingPrediction(null);
-      await fetchData();
+        if (!createdPrediction?.id) {
+          throw new Error("Prediction was saved, but its ID was not returned.");
+        }
+
+        setEditingPrediction(null);
+        setOpen(false);
+
+        navigate("/", {
+          state: { focusPredictionId: createdPrediction.id },
+        });
+      }
     } catch (err) {
       console.error("Failed to save prediction:", err);
       setError(
