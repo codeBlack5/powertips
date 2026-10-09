@@ -24,12 +24,23 @@ function Home() {
     (prediction) => String(prediction.id) === String(focusPredictionId)
   );
 
+  const refreshPredictions = async () => {
+    try {
+      setError("");
+      const response = await api.get("/predictions");
+      setPredictions(response.data);
+    } catch (err) {
+      console.error("Failed to refresh predictions:", err);
+      setError("Unable to refresh predictions right now.");
+      throw err;
+    }
+  };
+
   useEffect(() => {
     const fetchPredictions = async () => {
       try {
         setLoading(true);
         setError("");
-
         const response = await api.get("/predictions");
         setPredictions(response.data);
       } catch (err) {
@@ -222,7 +233,7 @@ function Home() {
         {user?.role === "admin" && (
           <>
             <PredictionManager />
-            <MatchResultsManager />
+            <MatchResultsManager onResultSaved={refreshPredictions} />
           </>
         )}
 
