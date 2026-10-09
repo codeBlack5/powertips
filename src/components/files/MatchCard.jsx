@@ -1,55 +1,191 @@
-import React from 'react'
+import React from "react";
 import { motion } from "framer-motion";
-import homeLogo from '../assets/images/pedri.jpg'
-import awayLogo from '../assets/images/vini.jpg'
-function MatchCard({match}) {
-    const {homeTeam, awayTeam, prediction, time, type} = match;
-    const isVIP = type === "vip";
+
+import defaultHomeLogo from "../assets/images/pedri.jpg";
+import defaultAwayLogo from "../assets/images/vini.jpg";
+
+function formatKickoff(kickoff) {
+  if (!kickoff) return "TBD";
+
+  const date = new Date(kickoff);
+
+  if (Number.isNaN(date.getTime())) return "TBD";
+
+  return date.toLocaleString([], {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+function MatchCard({ match, featured = false }) {
+  const {
+    homeTeam,
+    awayTeam,
+    homeLogo,
+    awayLogo,
+    prediction,
+    kickoff,
+    type = "free",
+    league,
+    odds,
+    confidence,
+    analysis,
+    status = "pending",
+    locked = false,
+  } = match;
+
+  const isVIP = type === "vip";
+  const isLocked = isVIP && locked;
+
+  const statusStyles = {
+    pending: {
+      label: "Pending",
+      className: "border-yellow-400/20 bg-yellow-400/10 text-yellow-400",
+    },
+    won: {
+      label: "Won",
+      className: "border-emerald-400/20 bg-emerald-400/10 text-emerald-400",
+    },
+    lost: {
+      label: "Lost",
+      className: "border-red-400/20 bg-red-400/10 text-red-400",
+    },
+    void: {
+      label: "Void",
+      className: "border-gray-400/20 bg-gray-400/10 text-gray-300",
+    },
+  };
+
+  const currentStatus = statusStyles[status] || statusStyles.pending;
+
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
+    <motion.article
+      initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ scale: 1.02 }}
-      transition={{ duration: 0.3 }}
-      className="bg-white shadow-lg rounded-xl p-4 w-full max-w-md"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.25 }}
+      className={`relative overflow-hidden rounded-2xl border ${
+        featured
+          ? "border-yellow-400/40 bg-gradient-to-br from-yellow-400/10 via-black to-black"
+          : "border-white/10 bg-white/[0.04]"
+      } p-5 shadow-xl shadow-black/20 backdrop-blur-sm`}
     >
-      <div className="flex justify-between mb-2 text-sm text-gray-500">
-        <span>{time}</span>
-        <span className={`uppercase ${isVIP ? "text-yellow-500" : "text-green-500"}`}>
-          {type}
-        </span>
-      </div>
-
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          <img src={homeLogo} alt={homeTeam} className="w-8 h-8" />
-          <span>{homeTeam}</span>
-        </div>
-        <span className="text-sm text-gray-400">vs</span>
-        <div className="flex items-center space-x-2">
-          <span>{awayTeam}</span>
-          <img src={awayLogo} alt={awayTeam} className="w-8 h-8" />
-        </div>
-      </div>
-
-      <div className={`text-center text-xl font-bold ${isVIP ? "blur-sm" : ""}`}>
-        {prediction}
-      </div>
-
-      {isVIP && (
-        <div className="text-center mt-3">
-          <a
-            href="https://t.me/+JVfBp3Q03OU5ZTk0"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Unlock on Telegram
-          </a>
+      {featured && (
+        <div className="absolute right-0 top-0 rounded-bl-xl bg-yellow-400 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-black">
+          Game of the Day
         </div>
       )}
-    </motion.div>
-  );
-};
 
-export default MatchCard
+      <div className="mb-5 flex items-center justify-between gap-3 text-xs">
+        <span className="min-w-0 truncate font-semibold uppercase tracking-wider text-gray-400">
+          {league || "Football"}
+        </span>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <span
+            className={`rounded-full border px-2.5 py-1 font-bold uppercase ${
+              isVIP
+                ? "border-yellow-400/20 bg-yellow-400/10 text-yellow-400"
+                : "border-emerald-400/20 bg-emerald-400/10 text-emerald-400"
+            }`}
+          >
+            {type}
+          </span>
+
+          <span
+            className={`rounded-full border px-2.5 py-1 font-bold uppercase ${currentStatus.className}`}
+          >
+            {currentStatus.label}
+          </span>
+        </div>
+      </div>
+
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-1 flex-col items-center text-center">
+          <img
+            src={homeLogo || defaultHomeLogo}
+            alt={homeTeam}
+            className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+          />
+
+          <span className="text-sm font-bold text-white">{homeTeam}</span>
+        </div>
+
+        <div className="w-20 shrink-0 text-center">
+          <span className="block text-[10px] font-bold uppercase leading-4 tracking-wide text-gray-500">
+            {formatKickoff(kickoff)}
+          </span>
+
+          <span className="mt-1 block text-lg font-black text-gray-500">
+            VS
+          </span>
+        </div>
+
+        <div className="flex min-w-0 flex-1 flex-col items-center text-center">
+          <img
+            src={awayLogo || defaultAwayLogo}
+            alt={awayTeam}
+            className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
+          />
+
+          <span className="text-sm font-bold text-white">{awayTeam}</span>
+        </div>
+      </div>
+
+      <div className="rounded-xl border border-yellow-400/10 bg-black/50 p-4 text-center">
+        <p className="mb-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gray-500">
+          Prediction
+        </p>
+
+        <p
+          className={`text-lg font-black ${
+            isLocked ? "text-gray-300" : "text-yellow-400"
+          }`}
+        >
+          {prediction}
+        </p>
+
+        {!isLocked && (odds || confidence) && (
+          <div className="mt-3 flex items-center justify-center gap-4 text-xs">
+            {odds && (
+              <span className="text-gray-400">
+                Odds <strong className="text-white">{odds}</strong>
+              </span>
+            )}
+
+            {confidence && (
+              <span className="text-gray-400">
+                Confidence{" "}
+                <strong className="text-emerald-400">
+                  {confidence}%
+                </strong>
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {analysis && !isLocked && (
+        <p className="mt-4 line-clamp-2 text-sm leading-6 text-gray-400">
+          {analysis}
+        </p>
+      )}
+
+      {isLocked && (
+        <a
+          href="https://t.me/+g6lqmcWDTpAxZTM0"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 flex min-h-[44px] items-center justify-center rounded-xl bg-yellow-400 px-4 py-2 text-sm font-black text-black transition hover:bg-yellow-300"
+        >
+          Unlock VIP Prediction
+        </a>
+      )}
+    </motion.article>
+  );
+}
+
+export default MatchCard;

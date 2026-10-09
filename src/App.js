@@ -8,8 +8,10 @@ import Login from './components/pages/Login';
 import { initGA, logPageView } from "./ga";
 import Register from "./components/pages/Register";
 import AppWrapper from "./AppWrapper";
+import { AuthProvider } from "./context/AuthContext";
 import Favorites from "./components/pages/Favorites";
 import History from "./components/pages/History";
+import Profile from "./components/pages/Profile";
 
 function PageTracker() {
   const location = useLocation();
@@ -27,9 +29,10 @@ function App() {
   }, []);
   return (
     <BrowserRouter>
-    <AppWrapper>
-    <PageTracker />
-      <Routes>
+    <AuthProvider>
+      <AppWrapper>
+        <PageTracker />
+        <Routes>
         <Route path='/' element={<Layout/>}>
           <Route index element={<Home/>}/>
           <Route path='/news' element={<Blog/>}/>
@@ -37,9 +40,11 @@ function App() {
           <Route path='/register' element={<Register/>}/>
           <Route path="/favorites" element={<Favorites/>}/>
           <Route path="/history" element={<History/>}/>
+          <Route path="/profile" element={<Profile/>}/>
         </Route>
-      </Routes>
+        </Routes>
       </AppWrapper>
+    </AuthProvider>
     </BrowserRouter>
   );
 }

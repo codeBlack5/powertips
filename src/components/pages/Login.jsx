@@ -1,20 +1,48 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import api from "../../api/client";
+import { useAuth } from "../../context/AuthContext";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    if (!email.trim() || !password) {
+      return;
+    }
+
     setLoading(true);
 
-    // 🔗 Later: call Rails API here
-    setTimeout(() => {
+    try {
+      const response = await api.post("/auth/login", {
+        email: email.trim(),
+        password,
+      });
+
+      login(response.data);
+
+      alert("Login successful!");
+      navigate("/");
+    } catch (error) {
+      const message =
+        error.response?.data?.error?.join?.(", ") ||
+        error.response?.data?.error ||
+        "Login failed. Please check your email and password.";
+
+      alert(message);
+      console.error("Login failed:", error);
+    } finally {
       setLoading(false);
-      alert("Logged in successfully! (Hook to API later)");
-    }, 1500);
+    }
   };
 
   return (
@@ -34,14 +62,25 @@ function Login() {
             required
           />
 
-          <input
-            type="password"
-            placeholder="Password"
-            className="w-full px-4 py-3 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              placeholder="Password"
+              className="w-full px-4 py-3 pr-12 rounded-lg bg-gray-800 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+
+            <button
+              type="button"
+              onClick={() => setShowPassword((current) => !current)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-gray-400 transition hover:text-blue-400"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           <button
             type="submit"
