@@ -44,7 +44,7 @@ function MatchResultsManager({ onResultSaved }) {
     if (!selectedMatch) return;
     setHomeScore(selectedMatch.homeScore ?? "");
     setAwayScore(selectedMatch.awayScore ?? "");
-  }, [matchId, selectedMatch?.homeScore, selectedMatch?.awayScore]);
+  }, [matchId, selectedMatch]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
