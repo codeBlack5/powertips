@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Swal from "sweetalert2";
 
 function Login() {
   const [email, setEmail] = useState("");
@@ -30,15 +31,30 @@ function Login() {
 
       login(response.data);
 
-      alert("Login successful!");
-      navigate("/");
+      await Swal.fire({
+        icon: "success",
+        title: "Welcome back!",
+        text: "You have logged in successfully.",
+        confirmButtonText: "Go to Dashboard",
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
+      navigate("/", { replace: true });
     } catch (error) {
       const message =
         error.response?.data?.error?.join?.(", ") ||
         error.response?.data?.error ||
         "Login failed. Please check your email and password.";
 
-      alert(message);
+      await Swal.fire({
+        icon: "error",
+        title: "Login failed",
+        text: Array.isArray(message) ? message.join(", ") : message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
       console.error("Login failed:", error);
     } finally {
       setLoading(false);

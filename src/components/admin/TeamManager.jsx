@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/client";
+import Swal from "sweetalert2";
 
 function TeamCrest({ url, name, shortName, sizeClass = "h-16 w-16" }) {
   const [failed, setFailed] = useState(false);
@@ -89,10 +90,6 @@ function TeamManager() {
     setEditingId(team.id);
     setError("");
     setMessage("");
-    document.getElementById("team-manager-form")?.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
   };
 
   const saveTeam = async (event) => {
@@ -111,44 +108,140 @@ function TeamManager() {
 
     try {
       if (editingId) {
-        await api.patch(`/teams/${editingId}`, payload);
-        setMessage("Team updated successfully.");
-      } else {
-        await api.post("/teams", payload);
-        setMessage("Team added successfully.");
-      }
+        const response = await api.patch(`/teams/${editingId}`, payload);
+        const result = response.data?.team || response.data?.data || response.data || {};
 
-      resetForm();
-      await fetchTeams();
+        setTeams((current) =>
+          current.map((team) =>
+            team.id === editingId
+              ? { ...team, ...result, ...payload }
+              : team
+          )
+        );
+
+        resetForm();
+        setMessage("Team updated successfully.");
+
+        await Swal.fire({
+          icon: "success",
+          title: "Team updated",
+          text: `${payload.name} has been updated.`,
+          confirmButtonColor: "#ca8a04",
+          background: "#111827",
+          color: "#ffffff",
+        });
+      } else {
+        const response = await api.post("/teams", payload);
+        const result = response.data?.team || response.data?.data || response.data;
+
+        if (!result || !result.id) {
+          throw new Error(
+            "The API did not return the new team's ID. Check the team list before trying again."
+          );
+        }
+
+        setTeams((current) => [
+          ...current.filter((team) => team.id !== result.id),
+          { ...payload, ...result },
+        ]);
+
+        resetForm();
+        setMessage("Team added successfully.");
+
+        await Swal.fire({
+          icon: "success",
+          title: "Team added",
+          text: `${payload.name} has been added.`,
+          confirmButtonColor: "#ca8a04",
+          background: "#111827",
+          color: "#ffffff",
+        });
+      }
     } catch (err) {
       const details = err.response?.data?.error;
-      setError(
-        Array.isArray(details)
-          ? details.join(", ")
-          : details || "Unable to save the team."
-      );
+      const message = Array.isArray(details)
+        ? details.join(", ")
+        : details || err.message || "Unable to save the team.";
+
+      setError(message);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Unable to save team",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const toggleActive = async (team) => {
+    const nextActive = !team.active;
+    const action = nextActive ? "activate" : "deactivate";
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} team?`,
+      text: `Do you want to ${action} ${team.name}?`,
+      showCancelButton: true,
+      confirmButtonText: `Yes, ${action}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#ca8a04",
+      background: "#111827",
+      color: "#ffffff",
+    });
+
+    if (!confirmation.isConfirmed) return;
+
     setError("");
     setMessage("");
 
     try {
-      await api.patch(`/teams/${team.id}`, {
-        active: !team.active,
+      const response = await api.patch(`/teams/${team.id}`, {
+        active: nextActive,
       });
-      setMessage(`${team.name} ${team.active ? "deactivated" : "activated"}.`);
-      await fetchTeams();
+      const result = response.data?.team || response.data?.data || response.data || {};
+
+      setTeams((current) =>
+        current.map((item) =>
+          item.id === team.id
+            ? { ...item, ...result, active: nextActive }
+            : item
+        )
+      );
+
+      const successMessage =
+        `${team.name} ${nextActive ? "activated" : "deactivated"}.`;
+
+      setMessage(successMessage);
+
+      await Swal.fire({
+        icon: "success",
+        title: nextActive ? "Team activated" : "Team deactivated",
+        text: successMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } catch (err) {
       const details = err.response?.data?.error;
-      setError(
-        Array.isArray(details)
-          ? details.join(", ")
-          : details || "Unable to update team status."
-      );
+      const message = Array.isArray(details)
+        ? details.join(", ")
+        : details || "Unable to update team status.";
+
+      setError(message);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Update failed",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     }
   };
 
