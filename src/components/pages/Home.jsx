@@ -7,6 +7,7 @@ import MatchResultsManager from "../admin/MatchResultsManager";
 import TeamManager from "../admin/TeamManager";
 import LeagueManager from "../admin/LeagueManager";
 import MatchManager from "../admin/MatchManager";
+import AdminRequestsManager from "../admin/AdminRequestsManager";
 import { useAuth } from "../../context/AuthContext";
 
 const platformStats = [
@@ -235,6 +236,7 @@ function Home() {
 
         {user?.role === "admin" && (
           <>
+            <AdminRequestsManager />
             <TeamManager />
             <LeagueManager />
             <MatchManager />
