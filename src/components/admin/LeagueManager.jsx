@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/client";
+import Swal from "sweetalert2";
 
 const EMPTY_FORM = {
   name: "",
@@ -80,42 +81,161 @@ function LeagueManager() {
     };
 
     if (!payload.name || !payload.country) {
-      setError("League name and country are required.");
+      const validationMessage = "League name and country are required.";
+      setError(validationMessage);
+      await Swal.fire({
+        icon: "warning",
+        title: "Check the form",
+        text: validationMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
       return;
     }
 
     try {
       setSaving(true);
-      if (editingId) {
-        await api.patch(`/leagues/${editingId}`, payload);
-        setMessage("League updated successfully.");
-      } else {
-        await api.post("/leagues", payload);
-        setMessage("League created successfully.");
-      }
 
-      setForm(EMPTY_FORM);
-      setEditingId(null);
-      setLogoFailed(false);
-      await loadLeagues();
+      if (editingId) {
+        const response = await api.patch(`/leagues/${editingId}`, payload);
+        const result = response.data?.league || response.data?.data || response.data || {};
+        const updatedLeague = { ...payload, ...result, id: editingId };
+
+        setLeagues((current) =>
+          current.map((league) =>
+            String(league.id) === String(editingId)
+              ? { ...league, ...updatedLeague }
+              : league
+          )
+        );
+
+        setMessage("League updated successfully.");
+        setForm(EMPTY_FORM);
+        setEditingId(null);
+        setLogoFailed(false);
+
+        await Swal.fire({
+          icon: "success",
+          title: "League updated",
+          text: `${payload.name} has been updated.`,
+          confirmButtonColor: "#ca8a04",
+          background: "#111827",
+          color: "#ffffff",
+        });
+      } else {
+        const response = await api.post("/leagues", payload);
+        const result = response.data?.league || response.data?.data || response.data;
+
+        if (!result || result.id == null) {
+          throw new Error(
+            "The league was submitted, but its ID was not returned. Reload the league list before adding it again."
+          );
+        }
+
+        setLeagues((current) => [
+          ...current.filter((league) => String(league.id) !== String(result.id)),
+          { ...payload, ...result },
+        ]);
+
+        setMessage("League created successfully.");
+        setForm(EMPTY_FORM);
+        setEditingId(null);
+        setLogoFailed(false);
+
+        await Swal.fire({
+          icon: "success",
+          title: "League created",
+          text: `${payload.name} has been added.`,
+          confirmButtonColor: "#ca8a04",
+          background: "#111827",
+          color: "#ffffff",
+        });
+      }
     } catch (err) {
       const detail = err.response?.data?.error;
-      setError(Array.isArray(detail) ? detail.join(", ") : detail || "Unable to save league. Confirm you are signed in as an admin.");
+      const errorMessage = Array.isArray(detail)
+        ? detail.join(", ")
+        : detail || err.message || "Unable to save league. Confirm you are signed in as an admin.";
+
+      setError(errorMessage);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Unable to save league",
+        text: errorMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const toggleActive = async (league) => {
+    const nextActive = !league.active;
+    const action = nextActive ? "activate" : "deactivate";
+
+    const confirmation = await Swal.fire({
+      icon: "question",
+      title: `${action.charAt(0).toUpperCase() + action.slice(1)} league?`,
+      text: `Do you want to ${action} ${league.name}?`,
+      showCancelButton: true,
+      confirmButtonText: `Yes, ${action}`,
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#ca8a04",
+      background: "#111827",
+      color: "#ffffff",
+    });
+
+    if (!confirmation.isConfirmed) return;
+
     setError("");
     setMessage("");
+
     try {
-      await api.patch(`/leagues/${league.id}`, { active: !league.active });
-      setMessage(`${league.name} ${league.active ? "deactivated" : "activated"}.`);
-      await loadLeagues();
+      const response = await api.patch(`/leagues/${league.id}`, {
+        active: nextActive,
+      });
+      const result = response.data?.league || response.data?.data || response.data || {};
+
+      setLeagues((current) =>
+        current.map((item) =>
+          String(item.id) === String(league.id)
+            ? { ...item, ...result, active: nextActive }
+            : item
+        )
+      );
+
+      const successMessage =
+        `${league.name} ${nextActive ? "activated" : "deactivated"}.`;
+      setMessage(successMessage);
+
+      await Swal.fire({
+        icon: "success",
+        title: nextActive ? "League activated" : "League deactivated",
+        text: successMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } catch (err) {
       const detail = err.response?.data?.error;
-      setError(Array.isArray(detail) ? detail.join(", ") : detail || "Unable to change league status.");
+      const errorMessage = Array.isArray(detail)
+        ? detail.join(", ")
+        : detail || "Unable to change league status.";
+
+      setError(errorMessage);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Status update failed",
+        text: errorMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     }
   };
 

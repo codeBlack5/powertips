@@ -1,9 +1,13 @@
 import React, { useState, useRef } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import api from "../../api/client";
+import Swal from "sweetalert2";
+import { useAuth } from "../../context/AuthContext";
 
 function Register() {
+  const navigate = useNavigate();
+  const { login } = useAuth();
   const [firstName, setfirstName] = useState("");
   const [lastName, setlastName] = useState("");
   const [email, setEmail] = useState("");
@@ -22,12 +26,31 @@ function Register() {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Auto-focus the first invalid/empty field
-    if (!firstName.trim()) return document.querySelector("#firstName")?.focus();
-    if (!lastName.trim()) return lastNameRef.current?.focus();
-    if (!email.trim()) return emailRef.current?.focus();
-    if (!password) return passwordRef.current?.focus();
-    if (!passwordConfirmation || password !== passwordConfirmation) return passwordConfRef.current?.focus();
+    if (!firstName.trim()) {
+      await Swal.fire({ icon: "warning", title: "First name required", text: "Please enter your first name." });
+      document.querySelector("#firstName")?.focus();
+      return;
+    }
+    if (!lastName.trim()) {
+      await Swal.fire({ icon: "warning", title: "Last name required", text: "Please enter your last name." });
+      lastNameRef.current?.focus();
+      return;
+    }
+    if (!email.trim()) {
+      await Swal.fire({ icon: "warning", title: "Email required", text: "Please enter your email address." });
+      emailRef.current?.focus();
+      return;
+    }
+    if (!password) {
+      await Swal.fire({ icon: "warning", title: "Password required", text: "Please create a password." });
+      passwordRef.current?.focus();
+      return;
+    }
+    if (!passwordConfirmation || password !== passwordConfirmation) {
+      await Swal.fire({ icon: "warning", title: "Passwords do not match", text: "Please confirm your password correctly." });
+      passwordConfRef.current?.focus();
+      return;
+    }
 
     setLoading(true);
 
@@ -39,22 +62,42 @@ function Register() {
         password_confirmation: passwordConfirmation,
       });
 
-      console.log("Registration successful:", response.data);
+      if (!response.data?.token || !response.data?.user) {
+        throw new Error("Registration succeeded, but authentication details were not returned. Please log in.");
+      }
 
-      alert("Registration successful! You can now log in.");
+      login(response.data);
+
+      await Swal.fire({
+        icon: "success",
+        title: "Welcome to Power Tips Predictions!",
+        text: "Your account has been created successfully.",
+        confirmButtonText: "Go to Dashboard",
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
+
+      navigate("/", { replace: true });
     } catch (error) {
+      const apiError = error.response?.data?.error;
       const message =
-        error.response?.data?.error?.join?.(", ") ||
-        error.response?.data?.error ||
+        Array.isArray(apiError) ? apiError.join(", ") :
+        apiError || error.message ||
         "Registration failed. Please try again.";
 
-      alert(message);
-      console.error("Registration failed:", error);
+      await Swal.fire({
+        icon: "error",
+        title: "Registration failed",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } finally {
       setLoading(false);
     }
   };
-
 
   // Form validation
   const isFormValid =

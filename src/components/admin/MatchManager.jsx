@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../api/client";
+import Swal from "sweetalert2";
 
 const EMPTY_FORM = {
   leagueId: "",
@@ -56,18 +57,45 @@ function MatchManager() {
     setMessage("");
 
     if (!form.leagueId || !form.homeTeamId || !form.awayTeamId || !form.kickoff) {
-      setError("Select a league, both teams, and the kickoff date and time.");
+      const message = "Select a league, both teams, and the kickoff date and time.";
+      setError(message);
+      await Swal.fire({
+        icon: "warning",
+        title: "Complete the fixture details",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
       return;
     }
 
     if (form.homeTeamId === form.awayTeamId) {
-      setError("Home and away teams must be different.");
+      const message = "Home and away teams must be different.";
+      setError(message);
+      await Swal.fire({
+        icon: "warning",
+        title: "Choose different teams",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
       return;
     }
 
     const kickoffDate = new Date(form.kickoff);
     if (Number.isNaN(kickoffDate.getTime())) {
-      setError("Enter a valid kickoff date and time.");
+      const message = "Enter a valid kickoff date and time.";
+      setError(message);
+      await Swal.fire({
+        icon: "warning",
+        title: "Invalid kickoff",
+        text: message,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
       return;
     }
 
@@ -82,22 +110,63 @@ function MatchManager() {
       });
 
       const created = response.data?.match || response.data;
-      setMatches((current) => [
-        ...current.filter((match) => match.id !== created.id),
-        created,
-      ].sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff)));
+
+      if (!created || created.id == null) {
+        throw new Error(
+          "The server response did not include the new fixture ID. Refresh the fixture list before trying again."
+        );
+      }
 
       const home = teams.find((team) => String(team.id) === form.homeTeamId);
       const away = teams.find((team) => String(team.id) === form.awayTeamId);
-      setMessage(`Fixture created: ${home?.name || "Home team"} vs ${away?.name || "Away team"}.`);
+      const league = leagues.find((item) => String(item.id) === form.leagueId);
+
+      const fixture = {
+        ...created,
+        homeTeam: created.homeTeam || home,
+        awayTeam: created.awayTeam || away,
+        league: created.league || league,
+      };
+
+      setMatches((current) =>
+        [
+          ...current.filter((match) => String(match.id) !== String(fixture.id)),
+          fixture,
+        ].sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff))
+      );
+
+      const successMessage =
+        `Fixture created: ${home?.name || "Home team"} vs ${away?.name || "Away team"}.`;
+      setMessage(successMessage);
       setForm((current) => ({
         ...EMPTY_FORM,
         leagueId: current.leagueId,
       }));
-      await loadData();
+
+      await Swal.fire({
+        icon: "success",
+        title: "Fixture created",
+        text: successMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } catch (err) {
       const detail = err.response?.data?.error;
-      setError(Array.isArray(detail) ? detail.join(", ") : detail || "Unable to create fixture.");
+      const errorMessage = Array.isArray(detail)
+        ? detail.join(", ")
+        : detail || err.message || "Unable to create fixture.";
+
+      setError(errorMessage);
+
+      await Swal.fire({
+        icon: "error",
+        title: "Unable to create fixture",
+        text: errorMessage,
+        confirmButtonColor: "#ca8a04",
+        background: "#111827",
+        color: "#ffffff",
+      });
     } finally {
       setSaving(false);
     }

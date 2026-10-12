@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import AdminAccessRequest from "./AdminAccessRequest";
 import { FaEdit, FaEye, FaEyeSlash, FaLock, FaSave, FaTimes, FaUserCircle } from "react-icons/fa";
 import api from "../../api/client";
 import { useAuth } from "../../context/AuthContext";
@@ -408,6 +409,8 @@ function Profile() {
             )}
           </div>
         </section>
+
+        <AdminAccessRequest />
 
         {/* Change password */}
         <section className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-2xl">
