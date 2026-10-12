@@ -76,7 +76,13 @@ function formatKickoff(kickoff) {
   });
 }
 
-function MatchCard({ match, featured = false }) {
+function MatchCard({
+  match,
+  featured = false,
+  isFavorited = false,
+  favoriteLoading = false,
+  onToggleFavorite,
+}) {
   const {
     homeTeam,
     awayTeam,
@@ -158,6 +164,36 @@ function MatchCard({ match, featured = false }) {
           </span>
         </div>
       </div>
+
+      {onToggleFavorite && (
+        <div className="mb-4 flex justify-end">
+          <button
+            type="button"
+            aria-pressed={isFavorited}
+            aria-label={
+              isFavorited
+                ? "Remove from favorites"
+                : "Add to favorites"
+            }
+            disabled={favoriteLoading}
+            onClick={() => onToggleFavorite(match)}
+            className={`inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition disabled:cursor-wait disabled:opacity-60 ${
+              isFavorited
+                ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-400"
+                : "border-white/15 bg-black/20 text-gray-300 hover:border-yellow-400/50 hover:text-yellow-400"
+            }`}
+          >
+            <span aria-hidden="true" className="text-lg leading-none">
+              {isFavorited ? "♥" : "♡"}
+            </span>
+            {favoriteLoading
+              ? "Saving..."
+              : isFavorited
+                ? "Saved"
+                : "Add to favorites"}
+          </button>
+        </div>
+      )}
 
       <div className="mb-5 flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 flex-col items-center text-center">
