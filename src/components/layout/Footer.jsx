@@ -12,7 +12,7 @@ function Footer() {
       <div className="max-w-6xl mx-auto flex flex-col sm:flex-row justify-center items-center gap-6 sm:gap-12">
         
         <button
-          onClick={() => trackClick("Facebook", "https://web.facebook.com/profile.php?id=61562164091887")}
+          onClick={() => trackClick("Facebook", "https://www.facebook.com/share/1A4L5YgBBk/")}
           className="flex items-center gap-2 hover:text-blue-400 transition text-lg"
         >
           <FaFacebookF /> Facebook
