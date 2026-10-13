@@ -1,11 +1,9 @@
 import React from 'react'
 import { FaFacebookF, FaTwitter, FaTelegramPlane, FaInstagram } from "react-icons/fa";
-import { logEvent } from "../../ga";
 
 function Footer() {
-  const trackClick = (platform, url) => {
-    logEvent("Footer Links", `Clicked ${platform} Link`, url);
-    window.open(url, "_blank", "noopener noreferrer");
+  const openSocialLink = (url) => {
+    window.open(url, "_blank", "noopener,noreferrer");
   };
   return (
     <footer className="bg-gray-800 text-white py-6 px-4 mt-auto shadow-inner">
@@ -19,21 +17,21 @@ function Footer() {
         </button>
 
         <button
-          onClick={() => trackClick("Twitter", "https://x.com/power_tipster")}
+          onClick={() => openSocialLink("https://x.com/power_tipster")}
           className="flex items-center gap-2 hover:text-blue-400 transition text-lg"
         >
           <FaTwitter /> Twitter
         </button>
 
         <button
-          onClick={() => trackClick("Telegram", "https://t.me/+g6lqmcWDTpAxZTM0")}
+          onClick={() => openSocialLink("https://t.me/+g6lqmcWDTpAxZTM0")}
           className="flex items-center gap-2 hover:text-blue-400 transition text-lg"
         >
           <FaTelegramPlane /> Telegram
         </button>
 
         <button
-          onClick={() => trackClick("Instagram", "https://instagram.com/yourprofile")}
+          onClick={() => openSocialLink("https://instagram.com/yourprofile")}
           className="flex items-center gap-2 hover:text-blue-400 transition text-lg"
         >
           <FaInstagram /> Instagram
