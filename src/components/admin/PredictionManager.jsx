@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import api from "../../api/client";
 import PredictionForm from "./PredictionForm";
 
 function PredictionManager() {
   const navigate = useNavigate();
+
   const [open, setOpen] = useState(false);
   const [predictions, setPredictions] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -13,9 +16,24 @@ function PredictionManager() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [deleteId, setDeleteId] = useState(null);
+  const [deletingId, setDeletingId] = useState(null);
 
-  const fetchData = async () => {
+  const showAlert = (options) =>
+    Swal.fire({
+      background: "#111111",
+      color: "#ffffff",
+      confirmButtonColor: "#eab308",
+      ...options,
+    });
+
+  const getErrorMessage = (err, fallback) => {
+    const detail = err.response?.data?.error;
+    return Array.isArray(detail)
+      ? detail.join(", ")
+      : detail || err.message || fallback;
+  };
+
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -30,19 +48,18 @@ function PredictionManager() {
     } catch (err) {
       console.error("Failed to load admin prediction data:", err);
       setError(
-        err.response?.data?.error ||
-          "Unable to load prediction management data."
+        getErrorMessage(err, "Unable to load prediction management data.")
       );
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (open) {
       fetchData();
     }
-  }, [open]);
+  }, [open, fetchData]);
 
   const handleSubmit = async (data) => {
     try {
@@ -51,20 +68,58 @@ function PredictionManager() {
       setMessage("");
 
       if (editingPrediction) {
-        await api.patch(`/predictions/${editingPrediction.id}`, data);
+        const response = await api.patch(
+          `/predictions/${editingPrediction.id}`,
+          data
+        );
+
+        const updatedPrediction =
+          response.data?.prediction || response.data;
+
+        setPredictions((current) =>
+          current.map((prediction) =>
+            prediction.id === editingPrediction.id
+              ? {
+                  ...prediction,
+                  ...(updatedPrediction &&
+                  typeof updatedPrediction === "object"
+                    ? updatedPrediction
+                    : {}),
+                  id: prediction.id,
+                }
+              : prediction
+          )
+        );
+
         setEditingPrediction(null);
         setMessage("Prediction updated successfully.");
-        await fetchData();
+
+        await showAlert({
+          icon: "success",
+          title: "Prediction updated",
+          text: "Your changes have been saved.",
+        });
       } else {
         const response = await api.post("/predictions", data);
-        const createdPrediction = response.data?.prediction || response.data;
+        const createdPrediction =
+          response.data?.prediction || response.data;
 
         if (!createdPrediction?.id) {
-          throw new Error("Prediction was saved, but its ID was not returned.");
+          throw new Error(
+            "Prediction was saved, but its ID was not returned."
+          );
         }
 
         setEditingPrediction(null);
         setOpen(false);
+
+        await showAlert({
+          icon: "success",
+          title: "Prediction created",
+          text: "Opening the prediction on the homepage.",
+          timer: 1400,
+          showConfirmButton: false,
+        });
 
         navigate("/", {
           state: { focusPredictionId: createdPrediction.id },
@@ -72,35 +127,82 @@ function PredictionManager() {
       }
     } catch (err) {
       console.error("Failed to save prediction:", err);
-      setError(
-        err.response?.data?.error ||
-          "Unable to save the prediction."
+
+      const errorMessage = getErrorMessage(
+        err,
+        "Unable to save the prediction."
       );
+
+      setError(errorMessage);
+
+      await showAlert({
+        icon: "error",
+        title: "Unable to save prediction",
+        text: errorMessage,
+      });
     } finally {
       setSaving(false);
     }
   };
 
   const handleDelete = async (id) => {
+    const prediction = predictions.find((item) => item.id === id);
+
+    const result = await showAlert({
+      icon: "warning",
+      title: "Delete prediction?",
+      text: prediction
+        ? `${prediction.homeTeam} vs ${prediction.awayTeam} will be removed.`
+        : "This prediction will be permanently removed.",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it",
+      cancelButtonText: "Cancel",
+      confirmButtonColor: "#dc2626",
+      cancelButtonColor: "#4b5563",
+      reverseButtons: true,
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
+      setDeletingId(id);
       setError("");
       setMessage("");
 
       await api.delete(`/predictions/${id}`);
 
-      setDeleteId(null);
-      setMessage("Prediction deleted successfully.");
+      setPredictions((current) =>
+        current.filter((item) => item.id !== id)
+      );
 
-      if (editingPrediction?.id === id) {     setEditingPrediction(null);
+      if (editingPrediction?.id === id) {
+        setEditingPrediction(null);
       }
 
-      await fetchData();
+      setMessage("Prediction deleted successfully.");
+
+      await showAlert({
+        icon: "success",
+        title: "Prediction deleted",
+        text: "The prediction has been removed.",
+      });
     } catch (err) {
       console.error("Failed to delete prediction:", err);
-      setError(
-        err.response?.data?.error ||
-          "Unable to delete the prediction."
+
+      const errorMessage = getErrorMessage(
+        err,
+        "Unable to delete the prediction."
       );
+
+      setError(errorMessage);
+
+      await showAlert({
+        icon: "error",
+        title: "Delete failed",
+        text: errorMessage,
+      });
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -108,15 +210,12 @@ function PredictionManager() {
     setMessage("");
     setError("");
     setEditingPrediction(prediction);
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
   };
 
   const handleCancelEdit = () => {
     setEditingPrediction(null);
+    setError("");
+    setMessage("");
   };
 
   return (
@@ -147,13 +246,19 @@ function PredictionManager() {
         {open && (
           <div className="border-t border-white/10 p-5 sm:p-6">
             {error && (
-              <div className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300">
-                {Array.isArray(error) ? error.join(", ") : error}
+              <div
+                role="alert"
+                className="mb-5 rounded-xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-300"
+              >
+                {error}
               </div>
             )}
 
             {message && (
-              <div className="mb-5 rounded-xl border border-green-400/20 bg-green-400/10 px-4 py-3 text-sm text-green-300">
+              <div
+                role="status"
+                className="mb-5 rounded-xl border border-green-400/20 bg-green-400/10 px-4 py-3 text-sm text-green-300"
+              >
                 {message}
               </div>
             )}
@@ -220,8 +325,7 @@ function PredictionManager() {
                         <div className="min-w-0">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className="font-black text-white">
-                              {prediction.homeTeam} vs{" "}
-                              {prediction.awayTeam}
+                              {prediction.homeTeam} vs {prediction.awayTeam}
                             </span>
 
                             <span className="rounded-full border border-yellow-400/20 bg-yellow-400/10 px-2 py-1 text-[10px] font-black uppercase text-yellow-400">
@@ -254,39 +358,16 @@ function PredictionManager() {
 
                           <button
                             type="button"
-                            onClick={() => setDeleteId(prediction.id)}
-                            className="min-h-[40px] rounded-lg border border-red-400/20 bg-red-400/10 px-4 text-sm font-bold text-red-300 transition hover:bg-red-400 hover:text-white"
+                            onClick={() => handleDelete(prediction.id)}
+                            disabled={deletingId === prediction.id}
+                            className="min-h-[40px] rounded-lg border border-red-400/20 bg-red-400/10 px-4 text-sm font-bold text-red-300 transition hover:bg-red-400 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                           >
-                            Delete
+                            {deletingId === prediction.id
+                              ? "Deleting..."
+                              : "Delete"}
                           </button>
                         </div>
                       </div>
-
-                      {deleteId === prediction.id && (
-                        <div className="mt-4 flex flex-col gap-3 rounded-xl border border-red-400/20 bg-red-400/5 p-4 sm:flex-row sm:items-center sm:justify-between">
-                          <p className="text-sm font-bold text-red-200">
-                            Delete this prediction?
-                          </p>
-
-                          <div className="flex gap-2">
-                            <button
-                              type="button"
-                              onClick={() => setDeleteId(null)}
-                              className="min-h-[38px] rounded-lg border border-white/10 bg-white/5 px-4 text-xs font-bold text-gray-300 transition hover:bg-white/10"
-                        >
-                              Cancel
-                            </button>
-
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(prediction.id)}
-                              className="min-h-[38px] rounded-lg bg-red-500 px-4 text-xs font-black text-white transition hover:bg-red-400"
-                            >
-                              Confirm Delete
-                            </button>
-                          </div>
-                        </div>
-                      )}
                     </div>
                   ))}
                 </div>

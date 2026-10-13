@@ -1,8 +1,64 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-import defaultHomeLogo from "../assets/images/pedri.jpg";
-import defaultAwayLogo from "../assets/images/vini.jpg";
+const TEAM_LOGOS = {
+  arsenal: "https://a.espncdn.com/i/teamlogos/soccer/500/359.png",
+  chelsea: "https://a.espncdn.com/i/teamlogos/soccer/500/363.png",
+  barcelona: "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+  "fc barcelona": "https://a.espncdn.com/i/teamlogos/soccer/500/83.png",
+  "real madrid": "https://a.espncdn.com/i/teamlogos/soccer/500/86.png",
+};
+
+function TeamLogo({ teamName, logoUrl }) {
+  const normalizedName = String(teamName || "").trim().toLowerCase();
+  const fallbackLogo = TEAM_LOGOS[normalizedName] || null;
+  const [src, setSrc] = useState(logoUrl || fallbackLogo);
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setSrc(logoUrl || fallbackLogo);
+    setFailed(false);
+  }, [logoUrl, fallbackLogo]);
+
+  const initials =
+    String(teamName || "?")
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase() || "?";
+
+  const handleError = () => {
+    if (fallbackLogo && src !== fallbackLogo) {
+      setSrc(fallbackLogo);
+    } else {
+      setFailed(true);
+    }
+  };
+
+  if (!src || failed) {
+    return (
+      <div
+        role="img"
+        aria-label={`${teamName} crest unavailable`}
+        className="mb-2 flex h-12 w-12 items-center justify-center rounded-full border border-yellow-400/30 bg-white/10 text-xs font-black text-yellow-400"
+      >
+        {initials}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={`${teamName} crest`}
+      onError={handleError}
+      className="mb-2 h-12 w-12 rounded-full bg-white p-1 object-contain ring-2 ring-white/10"
+    />
+  );
+}
+
 
 function formatKickoff(kickoff) {
   if (!kickoff) return "TBD";
@@ -20,7 +76,13 @@ function formatKickoff(kickoff) {
   });
 }
 
-function MatchCard({ match, featured = false }) {
+function MatchCard({
+  match,
+  featured = false,
+  isFavorited = false,
+  favoriteLoading = false,
+  onToggleFavorite,
+}) {
   const {
     homeTeam,
     awayTeam,
@@ -103,13 +165,39 @@ function MatchCard({ match, featured = false }) {
         </div>
       </div>
 
+      {onToggleFavorite && (
+        <div className="mb-4 flex justify-end">
+          <button
+            type="button"
+            aria-pressed={isFavorited}
+            aria-label={
+              isFavorited
+                ? "Remove from favorites"
+                : "Add to favorites"
+            }
+            disabled={favoriteLoading}
+            onClick={() => onToggleFavorite(match)}
+            className={`inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full border px-4 py-2 text-sm font-bold transition disabled:cursor-wait disabled:opacity-60 ${
+              isFavorited
+                ? "border-yellow-400/40 bg-yellow-400/10 text-yellow-400"
+                : "border-white/15 bg-black/20 text-gray-300 hover:border-yellow-400/50 hover:text-yellow-400"
+            }`}
+          >
+            <span aria-hidden="true" className="text-lg leading-none">
+              {isFavorited ? "♥" : "♡"}
+            </span>
+            {favoriteLoading
+              ? "Saving..."
+              : isFavorited
+                ? "Saved"
+                : "Add to favorites"}
+          </button>
+        </div>
+      )}
+
       <div className="mb-5 flex items-center justify-between gap-3">
         <div className="flex min-w-0 flex-1 flex-col items-center text-center">
-          <img
-            src={homeLogo || defaultHomeLogo}
-            alt={homeTeam}
-            className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
-          />
+          <TeamLogo teamName={homeTeam} logoUrl={homeLogo} />
 
           <span className="text-sm font-bold text-white">{homeTeam}</span>
         </div>
@@ -125,11 +213,7 @@ function MatchCard({ match, featured = false }) {
         </div>
 
         <div className="flex min-w-0 flex-1 flex-col items-center text-center">
-          <img
-            src={awayLogo || defaultAwayLogo}
-            alt={awayTeam}
-            className="mb-2 h-12 w-12 rounded-full object-cover ring-2 ring-white/10"
-          />
+          <TeamLogo teamName={awayTeam} logoUrl={awayLogo} />
 
           <span className="text-sm font-bold text-white">{awayTeam}</span>
         </div>

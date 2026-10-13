@@ -1,9 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import api from "../../api/client";
+import Swal from "sweetalert2";
 import MatchCard from "../files/MatchCard";
 import PredictionManager from "../admin/PredictionManager";
 import MatchResultsManager from "../admin/MatchResultsManager";
+import TeamManager from "../admin/TeamManager";
+import LeagueManager from "../admin/LeagueManager";
+import MatchManager from "../admin/MatchManager";
+import AdminRequestsManager from "../admin/AdminRequestsManager";
 import { useAuth } from "../../context/AuthContext";
 
 const platformStats = [
@@ -15,10 +20,118 @@ const platformStats = [
 
 function Home() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [predictions, setPredictions] = useState([]);
+  const [favoriteIds, setFavoriteIds] = useState({});
+  const [favoriteLoadingId, setFavoriteLoadingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!user) {
+      setFavoriteIds({});
+      return () => {
+        cancelled = true;
+      };
+    }
+
+    const loadFavoriteIds = async () => {
+      try {
+        const response = await api.get("/favorites");
+        const records = Array.isArray(response.data) ? response.data : [];
+        const ids = {};
+
+        records.forEach((favorite) => {
+          if (
+            favorite.favoritableType === "prediction" &&
+            favorite.favoritableId != null
+          ) {
+            ids[String(favorite.favoritableId)] = favorite.id;
+          }
+        });
+
+        if (!cancelled) {
+          setFavoriteIds(ids);
+        }
+      } catch (err) {
+        console.error("Failed to load favorites:", err);
+      }
+    };
+
+    loadFavoriteIds();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
+
+  const toggleFavorite = async (match) => {
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (match?.id == null) {
+      await Swal.fire({
+        title: "Cannot save this prediction",
+        text: "This prediction does not have a valid ID.",
+        icon: "error",
+      });
+      return;
+    }
+
+    const matchId = String(match.id);
+    const existingFavoriteId = favoriteIds[matchId];
+
+    setFavoriteLoadingId(matchId);
+
+    try {
+      if (existingFavoriteId != null) {
+        await api.delete(`/favorites/${existingFavoriteId}`);
+
+        setFavoriteIds((current) => {
+          const updated = { ...current };
+          delete updated[matchId];
+          return updated;
+        });
+      } else {
+        await api.post("/favorites", {
+          favoritableType: "prediction",
+          favoritableId: match.id,
+        });
+
+        const response = await api.get("/favorites");
+        const records = Array.isArray(response.data) ? response.data : [];
+        const updated = {};
+
+        records.forEach((favorite) => {
+          if (
+            favorite.favoritableType === "prediction" &&
+            favorite.favoritableId != null
+          ) {
+            updated[String(favorite.favoritableId)] = favorite.id;
+          }
+        });
+
+        setFavoriteIds(updated);
+      }
+    } catch (err) {
+      await Swal.fire({
+        title: "Favorites could not be updated",
+        text:
+          err.response?.data?.error ||
+          "Please check your connection and try again.",
+        icon: "error",
+        confirmButtonColor: "#eab308",
+      });
+    } finally {
+      setFavoriteLoadingId(null);
+    }
+  };
+
   const focusPredictionId = location.state?.focusPredictionId;
   const focusedPrediction = predictions.find(
     (prediction) => String(prediction.id) === String(focusPredictionId)
@@ -158,7 +271,13 @@ function Home() {
             )}
 
             {!loading && !error && featuredMatch && (
-              <MatchCard match={featuredMatch} featured />
+              <MatchCard
+                match={featuredMatch}
+                featured
+                isFavorited={favoriteIds[String(featuredMatch.id)] != null}
+                favoriteLoading={favoriteLoadingId === String(featuredMatch.id)}
+                onToggleFavorite={toggleFavorite}
+              />
             )}
 
             {!loading && !error && !featuredMatch && (
@@ -183,7 +302,13 @@ function Home() {
             </div>
 
             <div className="mx-auto max-w-2xl rounded-2xl ring-2 ring-yellow-400 shadow-lg shadow-yellow-400/10">
-              <MatchCard match={focusedPrediction} featured />
+              <MatchCard
+                match={focusedPrediction}
+                featured
+                isFavorited={favoriteIds[String(focusedPrediction.id)] != null}
+                favoriteLoading={favoriteLoadingId === String(focusedPrediction.id)}
+                onToggleFavorite={toggleFavorite}
+              />
             </div>
           </section>
         )}
@@ -224,6 +349,9 @@ function Home() {
                 <MatchCard
                   key={`${match.id}-${index}`}
                   match={match}
+                  isFavorited={favoriteIds[String(match.id)] != null}
+                  favoriteLoading={favoriteLoadingId === String(match.id)}
+                  onToggleFavorite={toggleFavorite}
                 />
               ))}
             </div>
@@ -232,6 +360,10 @@ function Home() {
 
         {user?.role === "admin" && (
           <>
+            <AdminRequestsManager />
+            <TeamManager />
+            <LeagueManager />
+            <MatchManager />
             <PredictionManager />
             <MatchResultsManager onResultSaved={refreshPredictions} />
           </>
